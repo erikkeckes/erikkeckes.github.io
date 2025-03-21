@@ -1,4 +1,4 @@
 User-agent: *
 Disallow:
 
-Sitemap: https://erikkeckes.github.io/al-folio/sitemap.xml
+Sitemap: https://erikkeckes.github.io/sitemap.xml
