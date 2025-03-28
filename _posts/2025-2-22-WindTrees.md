@@ -28,9 +28,104 @@ These techniques try to aproximate tree wind like motion :
 <h3> Stretching </h3>
 This technique is used in God of War to simulate wind effects on meshes. It is a relatively simple method that provides a wind like motion while maintaining a high degree of customizability for each instance. <br>
 Additionally, it does not have any special requirements on models/assets, making it a flexible and efficient approach for integrating wind effects into a game environment.
-<br><br>
+<br>
+Creating a wind effect using this approach is relativly easy. First length of position in model space is calculated. Wind is applied to position, streatching the model. To create more natural look we adjust new position by adjusting the directional vector based on length of original position.
+
+```hlsl
+float3 StretchPosition(float3 position, float3 windDirection, float windPower)
+{
+    // leng of original of original position
+    float originalLength = length(position);
+    // stretching position using wind
+    float3 newPosition = position + windDirection * windPower;
+    // adjusting position based on original length
+    newPosition = normalize(newPosition) * originalLength;
+    return newPosition;
+}
+```
+This forms the core of the algorithm. On its own, it would move the entire model without any wind bending or curvature. To simulate the effect of wind, a wind weight can be calculated and used to modify the wind power. This ensures that vertices farther from the pivot point are more affected. Proper calculation of the model's total height is necessary for accurate wind influence distribution.
+
+```hlsl
+float3 StretchPosition(float3 position, float3 windDirection, float windPower, float3 vertexColor)
+{
+    // leng of original of original position
+    float originalLength = length(position);
+    float weight = originalLength / modelHeight;
+    // stretching position using wind
+    float3 newPosition = position + windDirection * windPower * weigth;
+    // adjusting position based on original length
+    newPosition = normalize(newPosition) * originalLength;
+    return newPosition;
+}
+```
+<div class="row">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/WindAnim/stretchin1.png" title="branches hierarchy" class="img-fluid rounded z-depth-1" %}
+    </div>
+    <div class="col-sm mt-3 mt-md-0">
+    </div>
+</div>
+
+To introduce curvature, a Bézier curve can be used. The vertex weight is calculated and then used to determine the final modifier (ranging from 0 to 1, similar to weights) for stretching.
+```hlsl
+float3 StretchPosition(float3 position, float3 windDirection, float windPower, float3 vertexColor)
+{
+    // leng of original of original position
+    float originalLength = length(position);
+    float weight = originalLength / modelHeight;
+    // stretching position using wind
+    float3 newPosition = position + windDirection * windPower * SampleBezierCurve(weight).y * weigth;
+    // adjusting position based on original length
+    newPosition = normalize(newPosition) * originalLength;
+    return newPosition;
+}
+```
+<div class="row">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/WindAnim/stretchin2.png" title="branches hierarchy" class="img-fluid rounded z-depth-1" %}
+    </div>
+    <div class="col-sm mt-3 mt-md-0">
+    </div>
+</div>
+
+Periodic function like sin and cos can be used to create periodic waving.
+```hlsl
+float3 StretchPosition(float3 position, float3 windDirection, float windPower, float3 vertexColor)
+{
+    // leng of original of original position
+    float originalLength = length(position);
+    float weight = originalLength / modelHeight;
+    // stretching position using wind
+    float phase = (cos(time) + 1) * 0.5;
+    float3 newPosition = position + windDirection * (windPower + windPower * phase) * weigth * SampleBezierCurve(weight).y;
+    // adjusting position based on original length
+    newPosition = normalize(newPosition) * originalLength;
+    return newPosition;
+}
+```
+{% include video.liquid path="assets/video/WindAnim/Stretching.mp4" class="img-fluid rounded z-depth-1" controls=true %}
+
+Artists can be given more creative freedom by introducing a few adjustable parameters to the function. Each model can utilize vertex colors with three floating-point values, each ranging from 0 to 1. These values can be used to influence different aspects of the wind effect, such as amplitude, weight, or stretchiness at the vertex level. By adjusting these parameters, artists can fine-tune the movement of different parts of the mesh, allowing for more natural and varied wind interactions. Additionally, noise can be incorporated to add irregularity and enhance the overall visual quality, making the effect feel more organic and dynamic.
+<br>
+In this example, the red channel of the vertex color is used to control the stretchiness of the vertex, determining how much it deforms under the wind effect. The green channel influences the oscillation speed, affecting how quickly the vertex moves in response to wind forces. By adjusting these values per vertex, artists can create more nuanced and natural wind interactions, allowing different parts of the mesh to react uniquely. This level of control helps achieve more dynamic and visually appealing results.
+```hlsl
+float3 StretchPosition(float3 position, float3 windDirection, float windPower, float3 vertexColor)
+{
+    // leng of original of original position
+    float originalLength = length(position);
+    float weight = originalLength / modelHeight;
+    // stretching position using wind
+    float phase = (cos(time * vertexColor.y) + 1) * 0.5;
+    float3 newPosition = position + windDirection * (windPower + windPower * phase) * weigth * SampleBezierCurve(weight).y;
+    // adjusting position based on original length
+    newPosition = normalize(newPosition) * originalLength * vertexColor.X;
+    return newPosition;
+}
+```
 <h3> Bending </h3>
 In Ghost of Tsushima, a more complex and asset dependent technique is used for simulating wind effects, specifically through bending. This approach relies on model/asset, requiring a skeletal mesh with a properly rigged skeleton. In contrast, the stretching technique, which is more flexible and can be applied to any static mesh without the need for additional rigging. While bending offers more realistic and detailed wind interactions, it comes with increased complexity and asset requirements.
+<br><br>
+This technique uses quanternions to apply rotation. 
 <br><br>
 In this technique, the skeleton is used to represent individual branches of the tree. The skeletal hierarchy naturaly organize the bones in branch hierarchy. The root bone of the skeleton represents the trunk, while its direct children correspond to the first level of branches. This branching structure continues further, with each subsequent level representing smaller branches. Depending on the complexity of the tree, the number of levels can vary, but typically, 2 to 4 levels (excluding the trunk) are sufficient to achieve visually appealing results.
 <div class="row">
@@ -67,7 +162,7 @@ Branches can be separated into tree categories:
 * branch is perpendicular to wind direction
 <br>
 <h5>Wind facing side</h5>
-Branch it this categry will be pressed down. Combination of draw and lift will produce some swaying up and down.
+Branch it this categry will be pressed down. Combination of drag and lift will produce some swaying up and down.
 <div class="row">
     <div class="col-sm mt-3 mt-md-0">
         {% include figure.liquid loading="eager" path="assets/img/WindAnim/windface.jpg" title="branches hierarchy" class="img-fluid rounded z-depth-1" %}
@@ -97,20 +192,27 @@ Brach perppendicular to wind will have a strong drag force aplied. Angle of the 
 Final result may be unnaturally synchronous. To improve it we can add optional parameters to the branches. Branch specific stiffness and oscilation offsets can be used to create assynchrous motion.
 If we know the level of branch we can take into account that as well and make oscilation differences between branch levels.
 <h4>Rigging simplification</h4>
-To Simplify the the model/asset rigging process, we can use one bone ber entire branch level. As explained simulating wind like motion uses skeleton rig only to represnet hierarchi of ranches and relationship between branch and vertex. It can be assumed that one bone per branch level can be used to simplify the rigging process.
+To simplify the model/asset rigging process, we can use a single bone per branch level. As explained, simulating wind-like motion relies on a skeletal rig to represent the branch hierarchy and the relationship between branches and vertices. By assuming one bone per branch level, the rigging process becomes more straightforward.
+<div class="row">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/WindAnim/Levles.png" title="branches hierarchy" class="img-fluid rounded z-depth-1" %}
+    </div>    
+    <div class="col-sm mt-3 mt-md-0">
+    </div>
+</div>
+Additionally, we can omit the weight on the branch itself by introducing an extra bone to define the branch length. This additional bone would be excluded from the simulation, with its length property stored in the bone data. The final branch weight can then be computed on the GPU using the bone data.
 <br>
-We can Also ommit the weight of on the branch itself, if we add extra bone to specify the branch length. This bone would be ommited in simulation. The length property would be added to the bone data. Final branch weight can e calculated on GPU from bone data.
-<br>
-Final bone struct used in shader
+Example bone struct used in shader
 ```hlsl
 struct Bone
 {
     float3 origin; // position in modle space of branch origin(bone position)
+    float3 direction; // direction of the bone
     float length; // length of the bone, precomputed on CPU
     uint parent; // id of parrent bone, could be replcaed with limited number of bone per vertex
 }
 ```
-Function to calculate bend weight from branch bone and model space position of vertex
+Function to calculate bend weight from branch bone and model space position of vertex. This can be replaced with traditional weights, depending on use case.
 ```hlsl
 float CalculateBoneWeight(Bone bone, float3 position)
 {
@@ -119,40 +221,112 @@ float CalculateBoneWeight(Bone bone, float3 position)
     return clamp(localDist, 0,1); // clamping value to range [0,1], in case we go over 1
 }
 ```
+If artists want more control, bone weights can be added. Another improvement is precomputing all bones that influence a branch instead of traversing the branch hierarchy based on bone indices in the shader.
+
 <h4> Branch simulation step</h4>
+Branches simulate bending by traversing the branch hierarchy to the trunk. Simulation step is executed for each branch level
+<br>
+Each bending rule is defined by its own amplitude, frequency, and angle shift, allowing for diverse movement patterns. These parameters can be individually customized for each tree instance, enabling unique bending behavior across different trees. By adjusting these values, variations in amplitude, angle shift and frequenceis can be introduced, enhancing the realism and diversity of tree animations in a scene.
 
 ```hlsl
-float4 bendBranch(float3 pos, float3 branchOrigin, float3 branchUp,
-                  float branchNoise, float3 windDir, float windPower)
+float3 BendBranch(float3 localPos, Bone bone, float weight, float3 windDir, float3 windTangent)
 {
-    // position in branch space
-    float3 branchSpacePos = pos - branchOrigin;
+	// determine branch orientation relative to the wind
+	float dota = dot(bone.direction, windDir);
+	float dotb = dot(bone.direction, windTangent);
 
-    // calculating wind amount values
-    float towardsX = dot(normalize(float3(posInBranchSpace.x, 0, posInBranchSpace.z)), float3(1, 0, 0));
-    float facingWind = dot(normalize(float3(posInBranchSpace.x, 0, posInBranchSpace.z)), windDir);
-    float a = branchSwayPowerA * cos(time + branchNoise * branchMovementRandomization);
-    float b = branchSwayPowerB * cos(timeWithDelay + branchNoise * branchMovementRandomization);
-    
-    // rotation ammount for wind facing branch
-    float oldA = a;
-    a = -0.5 * a + branchSuppressPower * branchSwayPowerA;
-    a = lerp(oldA * windPower, a * windPower,
-           delayedWindPower * saturate(1 - facingWind));
-    
-    // opposite wind side ammount
-    b *= windPower;
+	// calculate parameters for rules
+	float t = dota * 0.5f + 0.5f;
+	float3 amplitudes = lerp(BACKAMPLITUDE, FRONT_AMPLITUDE, t);
+	float3 angleShifts = lerp(BACKAMPLITUDE, FRONT_AMPLITUDE, t);
+	
+	float amplitude0 = lerp3(amplitudes.x, amplitudes.y, amplitudes.z, weight);
+	float angleShift0 = lerp3(angleShifts.x, angleShifts.y, angleShifts.z, weight);
 
-    // creating wind tangent to create axies for wind facing branch
-    float3 windTangent = float3(-windDir.z, windDir.y, windDir.x);
-    
-    // rotation facing the wind
-    float4 rotation1 = quatAxisAngle(windTangent, a);
+	float frequency0 = (dota > 0)? FRONT_FREQUENCY: FREQUENCY_BACK;
+	
+	float amplitude1 = SIDE_AMPLITUDE.y;
+	float angleShift1 = SIDE_ANGLESHIFT.y * dotb;
+	float frequency1 = SIDE_FREQUENCY;
+	
+	// rotation along direction of the wind
+	float4 q0 = quatAxisAngle(windTangent, angleShift0 + amplitude0 * sin((fTime)*frequency0));
 
-    // rotaion oposite to the wind
-    float4 rotation2 = quatAroundY(b);
-    
-    // lerping final position between 2 rotaions based on angle between branch and wind
-    return lerp(rotation1, rotation2, 1 - abs(facingWind));
+	// rotation along the trunk
+	float4 q1 = quatAxisAngle(getTrunkAxis(), angleShift1 + amplitude1 * sin((fTime)*frequency1));
+	
+	// combine bending
+	float4 q = lerp(q1, q0, abs(dota));
+	
+	// convert quaternion to rotation matrix (3x3)
+	float3x3 windRotationMatrix = quatToMatrix(q);
+    // bend the local vector
+    float3 newPos = ((pos - bone.origin) * windRotationMatrix).xyz;
+    return newPos + bone.origin;
 }
 ```
+
+<h4>Putting all together</h4>
+Bending simulations can be executed entirely in the vertex shader. Data retrieval for vertices varies depending on the renderer and rendering API used. This serves as an example of a bending algorithm: initially, all data is fetched. Precalculating the bone hierarchy depth can optimize the loop by eliminating the need to check if a bone is a trunk (has no parent ID). The algorithm proceeds through each branch level, simulating each level and combining all rotations. Finally, trunk rotation is applied, a step that remains consistent regardless of the branch level.
+
+```hlsl
+// input constants
+WindData wind;
+
+// bone buffer
+Buffer<Bone> BoneBuffer;
+
+VertexOutput main(ShaderInput input)
+{
+    float3 position = input.position;
+    
+    uint boneIndex = input.boneId;
+    Bone bone = BoneBuffer[boneIndex];
+    int level = bone.level;
+    float weight = 0;
+    // zero level is trunk
+    for(int i = level; i > 0; i--)
+    {
+        weight = CalculateBoneWeight(position, bone);
+        position = BendBranch(position ,bone, weight, wind.Direction, tangetn);
+        bone = BoneBuffer[bone.parent];
+    }
+    // apply trunk rotation
+    float3x3 windRotation = quatToMatrix(windRotation);
+    weight = CalculateBoneWeight(position, bone);
+    position = lerp(position, (pos * windRotation).xyz, weight);
+
+    VertexOutput output;
+    output.position = position;
+    return output;
+}
+```
+
+Similar to the Stretching technique, vertex color can be used to influence certain parameters, but its impact is less pronounced. In this case, it allows for subtle adjustments, such as modifying the wind effect on specific branches or areas of the mesh. The flexibility comes from being able to adjust values for a specific set of branches per instance, providing enough customization to create varied and visually interesting results without requiring overly complex modifications. This approach strikes a balance between control and efficiency, offering artists the freedom to tailor the wind effect to different parts of the tree or asset as needed.
+
+<h3>Wind representation</h3>
+Up until now, we have represented wind as a simple directional vector and wind power, which is an efficient but limited approach. While this method is straightforward, it doesn't account for the complex, varying behavior of wind across a larger environment, such as wind fields. 
+<h4>Noise texture</h4>
+To simulate these more dynamic wind effects, a noise texture can be introduced, creating a wind field. This texture would be sampled based on the tree's instance position and time, providing variation in the wind's direction and intensity across different areas.
+
+Both worley  and Perlin noise can be used for this purpose, with Perlin noise offering smooth, continuous variations and worley  creating more sharp, cell-like patterns. Using noise functions adds complexity to the wind direction generation, allowing for more natural and varied wind interactions. Instead of performing real-time noise function calculations, this process can be simplified by using a pre-generated texture, which can be looped over for the same effect. This method efficiently replicates the randomness of wind fields, creating a more immersive and organic wind simulation.
+<div class="row">
+    <div class="col-sm mt-3 mt-md-0">
+        Perlin noise
+        {% include figure.liquid loading="eager" path="assets/img/WindAnim/perlin.png" title="branches hierarchy" class="img-fluid rounded z-depth-1" %}
+    </div>    
+    <div class="col-sm mt-3 mt-md-0">
+        worley noise
+        {% include figure.liquid loading="eager" path="assets/img/WindAnim/worly.png" title="branches hierarchy" class="img-fluid rounded z-depth-1" %}
+    </div>
+</div>
+
+<h4>Fluid simulation</h4>
+Fluid simulation can be used to simulate wind motion, offering one of the most complex solutions for creating realistic and dynamic wind behavior. This approach simulates the movement of air in a more detailed and physically accurate manner, but developing a performant fluid wind simulation is a highly challenging task. To improve the simulation's realism, it can be combined with a terrain height map, preventing the wind from moving directly into steep cliffs or unrealistic paths by accounting for the terrain's influence on airflow.
+<br>
+In Ghost of Tsushima, fluid simulation is employed to simulate wind, and this simulation is used to affect various elements in the game, such as particles influenced by wind, cloth movement, and tree behavior. By simulating the wind's interaction with these elements in a fluid manner, the game creates a highly immersive experience, where the wind feels alive and responsive to the environment. This approach adds a high level of realism but requires careful optimization to ensure the performance remains manageable.
+<br><br>
+sources : <br>
+* <a href="https://www.youtube.com/watch?v=d61_o4CGQd8&t=715s">Ghost of Tsushima</a><br>
+* <a href="https://www.youtube.com/watch?v=dDgyBKkSf7A&t=1475s">God of War</a><br>
+* <a href="https://developer.nvidia.cn/gpugems/gpugems3/part-i-geometry/chapter-6-gpu-generated-procedural-wind-animations-trees">gpu gems 3</a>
