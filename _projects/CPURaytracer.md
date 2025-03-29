@@ -51,6 +51,7 @@ Alterantive technique is oct trees.
 {% include video.liquid path="assets/video/Raytracer/multilevelgrid.mp4" class="img-fluid rounded z-depth-1" controls=true %}
 
 * Temporal reprojection
+<br>
 Temporal reprojection was introduced to improve visual quality after camera movement by retaining fragments of information from previous frames. It requires the previous frame's image, the depth buffer, and the camera's previous position. The technique maps pixels from the new frame back to the previous frame, using the depth buffer to compare distances and determine whether a sample remains valid.
 
 <a href="https://www.shadertoy.com/view/ldtGWl"> shadertoy using temporal reprojection </a>
