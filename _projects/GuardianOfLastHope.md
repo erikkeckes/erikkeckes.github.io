@@ -4,7 +4,7 @@ title: Guardian of Last Hope
 description: Hack and slash combat game
 img: assets/img/GOLH/start screen.png
 importance: 5
-category: fun
+category:  Side Project / school
 ---
 
 Embrace the fight against darkness in Guardian of Last Hope, a fast-paced hack-and-slash game featuring devastating special abilities and a powerful companion. Wield your trusty sword and harness the strength of your companion to eliminate the monsters of darkness.

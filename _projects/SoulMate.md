@@ -4,7 +4,7 @@ title: Soul Maze
 description: 3D cooperative packman
 img: assets/img/SM/LJD2Kx.png
 importance: 2
-category: fun
+category: Side Project / school
 ---
 
 Pac-Man is a timeless classic, but what if you could play it in 3D and with a friend? Enter Soul Maze, a modern reimagining of the arcade legend with exciting new mechanics and cooperative gameplay.

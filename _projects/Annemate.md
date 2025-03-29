@@ -5,7 +5,6 @@ description: extraction shooter
 img: assets/img/AM/AM2.jpg
 importance: 1
 category: work
-related_publications: true
 ---
 
 Aneemate is an extraction shooter with a unique creature-capturing twist during combat. Players aren’t the only threat on the map—dangerous robots, hostile environments, and wild creatures lurk around every corner. Bring your own Aneemate to support you in battle and capture new ones to aid you in future encounters. Explore the map’s hidden secrets, uncover powerful weapons and gadgets, and recruit formidable companions to strengthen your arsenal.

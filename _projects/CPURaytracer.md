@@ -4,7 +4,7 @@ title: CPU raytracer
 description: CPU whited raytracer
 img: assets/img/Raytracer/Screenshot 2025-03-24 202423.png
 importance: 3
-category: fun
+category:  Side Project / school
 ---
 
 This project was developed during the first year at BUAS, where the focus was on learning and implementing ray tracing—a modern graphics technique used to simulate light, shadows, and reflections. The project utilized a CPU-based white raytracer, with an emphasis on voxels for rendering. However, it wasn't limited to just voxels; the system was also capable of handling other geometric shapes, such as spheres and planes, expanding its flexibility and versatility in ray tracing applications.
@@ -49,6 +49,8 @@ This technique significantly reduces the computational time, as lower LODs are u
 <br>
 Alterantive technique is oct trees.
 {% include video.liquid path="assets/video/Raytracer/multilevelgrid.mp4" class="img-fluid rounded z-depth-1" controls=true %}
+
+// Add reprojection
 
 A simple yet engaging maze puzzle game was built on top of this ray tracer, featuring a unique light-based challenge—players can only see a limited portion of the maze, making navigation more difficult.
 

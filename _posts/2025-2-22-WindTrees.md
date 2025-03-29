@@ -8,7 +8,7 @@ categories: GPU programming DirectX12
 ---
 
 <h1>
-GPU Dynamic Wind Tree Animations
+GPU procedural Wind Tree Animations
 </h1>
 
 Wind can significantly enhance immersion while exploring a game's environment by adding a sense of movement and realism. It brings the 3D world to life by dynamically affecting elements such as trees, grass, and water, making the environment feel more responsive and engaging. Additionally, wind can amplify the intensity of storms, large-scale battles, or other impactful events by influencing visual effects, generating sound waves, and creating a more dramatic atmosphere. This not only deepens the player's sense of presence but also reinforces the overall mood and storytelling of the game.
@@ -105,23 +105,9 @@ float3 StretchPosition(float3 position, float3 windDirection, float windPower, f
 ```
 {% include video.liquid path="assets/video/WindAnim/Stretching.mp4" class="img-fluid rounded z-depth-1" controls=true %}
 
-Artists can be given more creative freedom by introducing a few adjustable parameters to the function. Each model can utilize vertex colors with three floating-point values, each ranging from 0 to 1. These values can be used to influence different aspects of the wind effect, such as amplitude, weight, or stretchiness at the vertex level. By adjusting these parameters, artists can fine-tune the movement of different parts of the mesh, allowing for more natural and varied wind interactions. Additionally, noise can be incorporated to add irregularity and enhance the overall visual quality, making the effect feel more organic and dynamic.
-<br>
-In this example, the red channel of the vertex color is used to control the stretchiness of the vertex, determining how much it deforms under the wind effect. The green channel influences the oscillation speed, affecting how quickly the vertex moves in response to wind forces. By adjusting these values per vertex, artists can create more nuanced and natural wind interactions, allowing different parts of the mesh to react uniquely. This level of control helps achieve more dynamic and visually appealing results.
-```hlsl
-float3 StretchPosition(float3 position, float3 windDirection, float windPower, float3 vertexColor)
-{
-    // leng of original of original position
-    float originalLength = length(position);
-    float weight = originalLength / modelHeight;
-    // stretching position using wind
-    float phase = (cos(time * vertexColor.y) + 1) * 0.5;
-    float3 newPosition = position + windDirection * (windPower + windPower * phase) * weigth * SampleBezierCurve(weight).y;
-    // adjusting position based on original length
-    newPosition = normalize(newPosition) * originalLength * vertexColor.X;
-    return newPosition;
-}
-```
+Artists can be given greater creative freedom by introducing several adjustable parameters to the wind simulation function. These parameters can control aspects such as stretching, stiffness, modifications to noise functions, and other properties that influence how the wind affects different parts of the mesh. This level of customization allows for fine-tuning the movement of vegetation, cloth, or other objects affected by wind, making the simulation feel more natural and responsive.
+
+The algorithm is highly customizable, enabling a wide range of effects tailored to different assets. In God of War, for example, the wind system supports up to eleven parameters per mesh, giving artists extensive control over how individual objects react to wind forces. This approach provides a balance between realism and performance while maintaining flexibility for artistic expression.
 <h3> Bending </h3>
 In Ghost of Tsushima, a more complex and asset dependent technique is used for simulating wind effects, specifically through bending. This approach relies on model/asset, requiring a skeletal mesh with a properly rigged skeleton. In contrast, the stretching technique, which is more flexible and can be applied to any static mesh without the need for additional rigging. While bending offers more realistic and detailed wind interactions, it comes with increased complexity and asset requirements.
 <br><br>
@@ -302,7 +288,10 @@ VertexOutput main(ShaderInput input)
 }
 ```
 
-Similar to the Stretching technique, vertex color can be used to influence certain parameters, but its impact is less pronounced. In this case, it allows for subtle adjustments, such as modifying the wind effect on specific branches or areas of the mesh. The flexibility comes from being able to adjust values for a specific set of branches per instance, providing enough customization to create varied and visually interesting results without requiring overly complex modifications. This approach strikes a balance between control and efficiency, offering artists the freedom to tailor the wind effect to different parts of the tree or asset as needed.
+{% include video.liquid path="assets/video/WindAnim/finalBend.mp4" class="img-fluid rounded z-depth-1" controls=true %}
+
+This method is highly customizable, allowing for a wide variety of tree animations by adjusting key parameters such as angle shift, amplitude, and frequency.
+By fine-tuning these parameters, a diverse range of tree behaviors can be achieved, making the system adaptable to various environments and artistic styles.
 
 <h3>Wind representation</h3>
 Up until now, we have represented wind as a simple directional vector and wind power, which is an efficient but limited approach. While this method is straightforward, it doesn't account for the complex, varying behavior of wind across a larger environment, such as wind fields. 
@@ -328,5 +317,6 @@ In Ghost of Tsushima, fluid simulation is employed to simulate wind, and this si
 <br><br>
 sources : <br>
 * <a href="https://www.youtube.com/watch?v=d61_o4CGQd8&t=715s">Ghost of Tsushima</a><br>
-* <a href="https://www.youtube.com/watch?v=dDgyBKkSf7A&t=1475s">God of War</a><br>
+* <a href="https://www.youtube.com/watch?v=MKX45_riWQA&t=1333s">wind efect God of War</a><br>
+* <a href="https://www.youtube.com/watch?v=dDgyBKkSf7A&t=1475s">wind simulation God of War</a><br>
 * <a href="https://developer.nvidia.cn/gpugems/gpugems3/part-i-geometry/chapter-6-gpu-generated-procedural-wind-animations-trees">gpu gems 3</a>

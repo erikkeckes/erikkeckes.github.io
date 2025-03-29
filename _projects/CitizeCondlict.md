@@ -5,7 +5,6 @@ description: arena hero shooter / battle royale
 img: assets/img/CC/CC4.jpg
 importance: 2
 category: work
-giscus_comments: true
 ---
 
 Citizen Conflict is a hero shooter that delivers fast-paced arena action and large-scale Battle Royale battles. Join the relentless struggle for dominance among three rival factions, each with unique heroes. Set in a futuristic world, the game features high-tech maps, advanced weaponry, and unconventional gear to enhance the combat experience.

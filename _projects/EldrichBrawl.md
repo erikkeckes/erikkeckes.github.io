@@ -4,7 +4,7 @@ title: Eldrich Brawl
 description: LAN coop game
 img: assets/img/EB/main_screen.png
 importance: 4
-category: fun
+category:  Side Project / school
 ---
 
 Eldritch Brawl is a local co-op party game inspired by Gang Beasts and TowerFall, designed for 2 to 4 players. Each match begins with players spawning at random locations within a chaotic, fast-paced arena. To gain the upper hand, players must pick up various items. All items can be thrwed, hitting opponent temporarily stun them.
