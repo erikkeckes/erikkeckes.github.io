@@ -50,11 +50,11 @@ This technique significantly reduces the computational time, as lower LODs are u
 Alterantive technique is oct trees.
 {% include video.liquid path="assets/video/Raytracer/multilevelgrid.mp4" class="img-fluid rounded z-depth-1" controls=true %}
 
-Temporal reprojection was introduced to improve visual quality after camera movement by retaining fragments of information from previous frames. It requires the previous frame's image, the depth buffer, and the camera's previous position. The technique maps pixels from the new frame back to the previous frame, using the depth buffer to compare distances and determine whether a sample remains valid.<br>
+* Temporal reprojection
+Temporal reprojection was introduced to improve visual quality after camera movement by retaining fragments of information from previous frames. It requires the previous frame's image, the depth buffer, and the camera's previous position. The technique maps pixels from the new frame back to the previous frame, using the depth buffer to compare distances and determine whether a sample remains valid.
 
-<a href =https://www.shadertoy.com/view/ldtGWl> shadertoy using temporal reprojection</a>
+<a href="https://www.shadertoy.com/view/ldtGWl"> shadertoy using temporal reprojection </a>
 
-<br><br>
 A simple yet engaging maze puzzle game was built on top of this ray tracer, featuring a unique light-based challenge—players can only see a limited portion of the maze, making navigation more difficult.
 
 * Ray-Traced Physics
