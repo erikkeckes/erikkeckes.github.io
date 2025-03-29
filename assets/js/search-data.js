@@ -68,7 +68,7 @@ ninja.data = [{
               window.location.href = "/projects/GuardianOfLastHope/";
             },},{id: "projects-pbr-renderer",
           title: 'PBR renderer',
-          description: "a project that redirects to another website",
+          description: "PBR renderer on ps5",
           section: "Projects",handler: () => {
               window.location.href = "/projects/PBRrenderer/";
             },},{id: "projects-soul-maze",
