@@ -2,7 +2,7 @@
 layout: page
 title: AneeMate
 description: extraction shooter
-img: assets/img/AM/AM2.jpeg
+img: assets/img/AM/AM2.jpg
 importance: 1
 category: work
 related_publications: true

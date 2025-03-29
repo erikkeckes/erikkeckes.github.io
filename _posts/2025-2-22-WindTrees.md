@@ -195,7 +195,7 @@ If we know the level of branch we can take into account that as well and make os
 To simplify the model/asset rigging process, we can use a single bone per branch level. As explained, simulating wind-like motion relies on a skeletal rig to represent the branch hierarchy and the relationship between branches and vertices. By assuming one bone per branch level, the rigging process becomes more straightforward.
 <div class="row">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/WindAnim/Levles.png" title="branches hierarchy" class="img-fluid rounded z-depth-1" %}
+        {% include figure.liquid loading="eager" path="assets/img/WindAnim/Levels.png" title="branches hierarchy" class="img-fluid rounded z-depth-1" %}
     </div>    
     <div class="col-sm mt-3 mt-md-0">
     </div>
@@ -288,7 +288,7 @@ VertexOutput main(ShaderInput input)
     for(int i = level; i > 0; i--)
     {
         weight = CalculateBoneWeight(position, bone);
-        position = BendBranch(position ,bone, weight, wind.Direction, tangetn);
+        position = BendBranch(position ,bone, weight, wind.Direction, windTangent);
         bone = BoneBuffer[bone.parent];
     }
     // apply trunk rotation
