@@ -140,7 +140,7 @@ v - linear velocity<br>
 x - position of branch<br>
 
 <h4>Branch motion</h4>
-We could simulate branch motion purely based on drag forces. This apraoch doesn't fit trees perfectly sonce aerodamics of leafs(shape dependant) can cause some lift of the braches. Lift can be defiend as sum of all external forces on a body acting perpendicular to the direction of the flow.
+We could simulate branch motion purely based on drag forces. This approach doesn't fit trees perfectly since aerodamics of leafs(shape dependant) can cause some lift of the braches. Lift can be defiend as sum of all external forces on a body acting perpendicular to the direction of the flow.
 <br>
 Branches can be separated into tree categories:
 * branch on wid facing side of tree
@@ -156,7 +156,7 @@ Branch it this categry will be pressed down. Combination of drag and lift will p
     <div class="col-sm mt-3 mt-md-0">
     </div>
 </div>
-<h5>Oposite Side</h5>
+<h5>Opposite Side</h5>
 Branch on opposite side, will be highly affected by wind turbolance and lift. This will result in high amplitude motion, such as random swaying or flapping.
 <div class="row">
     <div class="col-sm mt-3 mt-md-0">
@@ -195,6 +195,7 @@ struct Bone
     float3 origin; // position in modle space of branch origin(bone position)
     float3 direction; // direction of the bone
     float length; // length of the bone, precomputed on CPU
+    uint level; // level of branch, trunk is 0
     uint parent; // id of parrent bone, could be replcaed with limited number of bone per vertex
 }
 ```
@@ -252,7 +253,7 @@ float3 BendBranch(float3 localPos, Bone bone, float weight, float3 windDir, floa
 }
 ```
 
-<h4>Putting all together</h4>
+<h4>Putting it all together</h4>
 Bending simulations can be executed entirely in the vertex shader. Data retrieval for vertices varies depending on the renderer and rendering API used. This serves as an example of a bending algorithm: initially, all data is fetched. Precalculating the bone hierarchy depth can optimize the loop by eliminating the need to check if a bone is a trunk (has no parent ID). The algorithm proceeds through each branch level, simulating each level and combining all rotations. Finally, trunk rotation is applied, a step that remains consistent regardless of the branch level.
 
 ```hlsl

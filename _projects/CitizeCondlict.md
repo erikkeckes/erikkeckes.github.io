@@ -11,7 +11,7 @@ Citizen Conflict is a hero shooter that delivers fast-paced arena action and lar
 
 <h3>Game Mechanics</h3>
 I was responsible for developing, maintaining, and refining various abilities and mechanics to ensure seamless integration into the gameplay experience. 
-* Tactical Sprint a faster version of the standard sprint that requires stamina to activate. This ability included custom effects. (network synchronization, visuas)
+* Tactical Sprint a faster version of the standard sprint that requires stamina to activate. This ability included custom effects. (network synchronization, visuals)
 <h3>Optimization</h3>
 My role also involved optimizing the game's performance, focusing on networking, CPU, and GPU efficiency. I extensively used Unreal Insights and other profiling tools to identify and resolve bottlenecks, with a primary emphasis on networking and CPU optimization. This required creative solutions to enhance overall performance.
 
