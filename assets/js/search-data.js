@@ -30,7 +30,18 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/cv/";
           },
-        },{id: "post-procedural-wind-tree-animations",
+        },{id: "post-scaling-procedural-wind-tree-animations",
+      
+        title: "Scaling Procedural Wind Tree Animations",
+      
+      description: "Scaling up Tree numbers",
+      section: "Posts",
+      handler: () => {
+        
+          window.location.href = "/blog/2025/WindTreesScaling/";
+        
+      },
+    },{id: "post-procedural-wind-tree-animations",
       
         title: "Procedural Wind Tree Animations",
       
