@@ -13,6 +13,6 @@ A Physically Based Rendering (PBR) engine designed for the PlayStation 5, levera
 
 <div class="row">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/PBR/ibl2.png" title="branches hierarchy" class="img-fluid rounded z-depth-1" %}
+        {% include figure.liquid loading="eager" path="assets/img/PBR/ibl1.png" title="IBL" class="img-fluid rounded z-depth-1" %}
     </div>
 </div>
