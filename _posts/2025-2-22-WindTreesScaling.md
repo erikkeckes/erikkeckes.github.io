@@ -299,7 +299,7 @@ From the previous optimization, we already have a buffer containing all rotation
 In theory, all the necessary data is already available. To correctly calculate the final bone matrices, we need all bone rotations, their positions, and the inverse bind matrices.
 
 <h3>Small reminder:</h3> 
-* All rotation matrices/quaternions are in model space.
+* All rotation matrices/quaternions are in local bone space.
 * All bone positions are in model space.
 To calculate the skinning matrices, we need to start from the root bone, update its skinning matrix, and then recursively update all child bones until reaching the end of the hierarchy.
 <br>
@@ -335,8 +335,6 @@ Pick bone from buffer
     {
         // we need local postion
         position -= bone.parent.postion;
-        // get local rotation
-        rotation = mul(transpose(bone.parent.rotation), rotation);
     }
 
     // create local matrix
