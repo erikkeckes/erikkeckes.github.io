@@ -77,6 +77,11 @@ ninja.data = [{
           description: "Hack and slash combat game",
           section: "Projects",handler: () => {
               window.location.href = "/projects/GuardianOfLastHope/";
+            },},{id: "projects-inferno",
+          title: 'Inferno',
+          description: "Parkour speed running game",
+          section: "Projects",handler: () => {
+              window.location.href = "/projects/Inferno/";
             },},{id: "projects-pbr-renderer",
           title: 'PBR renderer',
           description: "PBR renderer on ps5",
