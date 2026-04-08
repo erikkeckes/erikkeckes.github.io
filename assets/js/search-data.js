@@ -92,6 +92,11 @@ ninja.data = [{
           description: "3D cooperative packman",
           section: "Projects",handler: () => {
               window.location.href = "/projects/SoulMate/";
+            },},{id: "projects-dx12-workgraph-rendering",
+          title: 'DX12 Workgraph rendering',
+          description: "GPU driven rendering",
+          section: "Projects",handler: () => {
+              window.location.href = "/projects/workgraphs/";
             },},{
         id: 'social-email',
         title: 'email',
