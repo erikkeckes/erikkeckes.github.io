@@ -32,17 +32,19 @@ const seededRandom = (seed: string) => {
 };
 
 const PEAKS = 3;
+// Narrow screens squeeze the wave horizontally, so they get fewer tops (1-2 visible)
+const PEAKS_MOBILE = 1.5;
 const AMPLITUDE = 18;
 
-// Every wave has the same 3 peaks and height; the seed only shifts where the pattern starts
-const generateWave = (seed: string) => {
+// Every wave has the same peak count and height; the seed only shifts where the pattern starts
+const generateWave = (seed: string, peaks: number) => {
 	const phase = seededRandom(seed)() * Math.PI * 2;
 	const steps = 180;
 
 	const points: string[] = [];
 	for (let i = steps; i >= 0; i--) {
 		const t = i / steps;
-		const y = 44 + AMPLITUDE * Math.sin(t * PEAKS * Math.PI * 2 + phase);
+		const y = 44 + AMPLITUDE * Math.sin(t * peaks * Math.PI * 2 + phase);
 		points.push(`${(t * WIDTH).toFixed(1)},${y.toFixed(1)}`);
 	}
 	return `M0,0H${WIDTH}V${points[0].split(',')[1]}L${points.join(' ')}Z`;
@@ -53,8 +55,14 @@ const generateTilt = (rising: boolean) => (rising ? 'M0,0H1440V16L0,72Z' : 'M0,0
 
 // Transitions alternate tilt / wave / tilt / ..., and each section opens with a tilt.
 // Transition 0 sits above the first band; transition i + 1 sits below band i.
-const transition = (n: number) =>
-	n % 2 === 0 ? generateTilt(n % 4 === 0) : generateWave(`${title}:${n}`);
+const transition = (n: number) => {
+	if (n % 2 === 0) {
+		const tilt = generateTilt(n % 4 === 0);
+		return { desktop: tilt, mobile: tilt };
+	}
+	const seed = `${title}:${n}`;
+	return { desktop: generateWave(seed, PEAKS), mobile: generateWave(seed, PEAKS_MOBILE) };
+};
 
 const bottomEdge = transition(index + 1);
 const topEdge = index === 0 ? transition(0) : undefined;
@@ -83,12 +91,14 @@ const tone = index % 2 === 0 ? 'tone-a' : 'tone-b';
 	{
 		topEdge && (
 			<svg class="wave wave-top" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true">
-				<path d={topEdge} />
+				<path class="edge-desktop" d={topEdge.desktop} />
+				<path class="edge-mobile" d={topEdge.mobile} />
 			</svg>
 		)
 	}
 	<svg class="wave" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true">
-		<path d={bottomEdge} />
+		<path class="edge-desktop" d={bottomEdge.desktop} />
+		<path class="edge-mobile" d={bottomEdge.mobile} />
 	</svg>
 </article>
 
@@ -173,6 +183,20 @@ const tone = index % 2 === 0 ? 'tone-a' : 'tone-b';
 	}
 
 	/* Mirrored wave rising above the first band, out of the page background */
+	.edge-mobile {
+		display: none;
+	}
+
+	@media (max-width: 640px) {
+		.edge-desktop {
+			display: none;
+		}
+
+		.edge-mobile {
+			display: inline;
+		}
+	}
+
 	.wave-top {
 		top: auto;
 		bottom: calc(100% - 1px);

@@ -103,3 +103,55 @@ pre code {
 	background: none;
 	border: none;
 }
+
+/* Markdown body: text, images and videos */
+.prose {
+	max-width: 75ch;
+	margin: 0 auto;
+}
+
+.prose h2 {
+	margin: 2.5rem 0 0.75rem;
+	font-size: 1.5rem;
+}
+
+.prose h3 {
+	margin: 2rem 0 0.5rem;
+	font-size: 1.2rem;
+}
+
+.prose p,
+.prose ul,
+.prose ol {
+	margin: 0 0 1.1rem;
+}
+
+.prose img,
+.prose video,
+.prose iframe {
+	display: block;
+	width: 100%;
+	height: auto;
+	margin: 1.75rem 0;
+	border: 0;
+	border-radius: var(--radius);
+	box-shadow: 0 8px 24px var(--color-shadow);
+}
+
+.prose iframe {
+	aspect-ratio: 16 / 9;
+}
+
+/* Side-by-side images: wrap them in <div class="gallery"> in the markdown */
+.prose .gallery {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+	gap: 1rem;
+	margin: 1.75rem 0;
+}
+
+.prose .gallery img {
+	margin: 0;
+	aspect-ratio: 16 / 9;
+	object-fit: cover;
+}
