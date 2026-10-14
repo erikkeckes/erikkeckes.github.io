@@ -29,7 +29,7 @@ const formatDate = (date: Date) =>
 <HomeLayout>
 	<Hero3D />
 
-	<Section id="projects" title="Featured projects" subtitle="A few things I've built that I'm most proud of.">
+	<Section id="projects" label="Featured projects">
 		<div class="subsections">
 			{
 				featuredProjects.map(({ id, data }, index) => (
@@ -48,7 +48,7 @@ const formatDate = (date: Date) =>
 		<Fragment slot="footer"><Button href="/projects">See all projects</Button></Fragment>
 	</Section>
 
-	<Section id="blog" title="From the blog" subtitle="Write-ups on graphics programming and game tech.">
+	<Section id="blog" label="From the blog">
 		<div class="subsections">
 			{
 				featuredPosts.map(({ id, data }, index) => (
@@ -68,14 +68,14 @@ const formatDate = (date: Date) =>
 		<Fragment slot="footer"><Button href="/blog">See all posts</Button></Fragment>
 	</Section>
 
-	<Section id="career" title="Career">
+	<Section id="career" label="Career">
 		<div class="career">
 			<Timeline title="Professional experience" entries={experience} align="end" />
 			<Timeline title="Education" entries={education} />
 		</div>
 	</Section>
 
-	<Section id="about" title="About me">
+	<Section id="about" label="About me">
 		<About />
 		<TechStack />
 	</Section>

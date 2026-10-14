@@ -72,7 +72,7 @@ const tone = index % 2 === 0 ? 'tone-a' : 'tone-b';
 <article class:list={['subsection', tone]} style={`z-index: ${100 - index}`}>
 	<div class="content">
 		<div class="body">
-			{meta && <span class="meta">{meta}</span>}
+			{meta && !image && <span class="meta">{meta}</span>}
 			<h3>{title}</h3>
 			<TagList tags={tags} />
 			<p>{description}</p>
@@ -83,7 +83,10 @@ const tone = index % 2 === 0 ? 'tone-a' : 'tone-b';
 		{
 			image && (
 				<div class="media">
-					<img src={image} alt={title} loading="lazy" />
+					<div class="frame">
+						{meta && <span class="meta">{meta}</span>}
+						<img src={image} alt={title} loading="lazy" />
+					</div>
 				</div>
 			)
 		}
@@ -162,10 +165,18 @@ const tone = index % 2 === 0 ? 'tone-a' : 'tone-b';
 		justify-content: center;
 	}
 
+	/* Keeps the timestamp lined up with the image's left edge */
+	.frame {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		width: 100%;
+		max-width: 420px;
+	}
+
 	img {
 		display: block;
 		width: 100%;
-		max-width: 420px;
 		aspect-ratio: 16 / 9;
 		object-fit: cover;
 		border-radius: calc(var(--radius) - 4px);

@@ -1,9 +1,20 @@
 ---
 // WebGPU-rendered hero scene. Rendering lives in src/scripts/webgpu/
+interface Props {
+	name?: string;
+	tagline?: string;
+}
+
+// Placeholders until the real copy is decided
+const { name = 'Erik Kečkéš', tagline = 'Graphics & Engine programmer' } = Astro.props;
 ---
 
 <section class="hero-3d" id="scene" aria-label="3D scene">
 	<canvas class="canvas" aria-hidden="true" title="Drag to rotate the view"></canvas>
+	<div class="intro">
+		<h1 class="name">{name}</h1>
+		<p class="tagline">{tagline}</p>
+	</div>
 	<p class="fallback" hidden>Your browser doesn't support WebGPU, so the 3D scene can't be shown.</p>
 </section>
 
@@ -57,12 +68,39 @@
 		cursor: grabbing;
 	}
 
-	.fallback {
+	/* Centred over the black hole; clicks pass through so the scene can still be dragged */
+	.intro {
 		position: absolute;
 		inset: 0;
 		display: flex;
+		flex-direction: column;
 		align-items: center;
 		justify-content: center;
+		gap: 0.5rem;
+		padding: 1.5rem;
+		text-align: center;
+		pointer-events: none;
+	}
+
+	.name {
+		margin: 0;
+		font-size: clamp(2rem, 6vw, 4rem);
+		line-height: 1.1;
+		color: var(--color-text);
+		text-shadow: 0 2px 24px var(--color-bg), 0 0 8px var(--color-bg);
+	}
+
+	.tagline {
+		margin: 0;
+		font-size: clamp(1rem, 2.2vw, 1.35rem);
+		color: var(--color-tag-line);
+		text-shadow: 0 1px 12px var(--color-bg), 0 0 6px var(--color-bg);
+	}
+
+	/* Sits under the intro text when the scene can't render */
+	.fallback {
+		position: absolute;
+		inset: auto 0 0;
 		margin: 0;
 		padding: 1.5rem;
 		color: var(--color-text-muted);
