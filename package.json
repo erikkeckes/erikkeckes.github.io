@@ -14,5 +14,8 @@
   "dependencies": {
     "astro": "^7.3.8",
     "simple-icons": "^16.35.0"
+  },
+  "devDependencies": {
+    "@webgpu/types": "^0.1.74"
   }
 }

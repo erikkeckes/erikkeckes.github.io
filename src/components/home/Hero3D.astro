@@ -1,11 +1,75 @@
 ---
-// Placeholder for the 3D rendered scene
+// WebGPU-rendered hero scene. Rendering lives in src/scripts/webgpu/
 ---
 
-<section class="hero-3d" id="scene" aria-label="3D scene"></section>
+<section class="hero-3d" id="scene" aria-label="3D scene">
+	<canvas class="canvas" aria-hidden="true" title="Drag to rotate the view"></canvas>
+	<p class="fallback" hidden>Your browser doesn't support WebGPU, so the 3D scene can't be shown.</p>
+</section>
+
+<script>
+	import { createHeroRenderer } from '../../scripts/webgpu/renderer';
+
+	const scene = document.querySelector<HTMLElement>('#scene');
+	const canvas = scene?.querySelector<HTMLCanvasElement>('canvas');
+	const fallback = scene?.querySelector<HTMLElement>('.fallback');
+
+	if (canvas) {
+		createHeroRenderer(canvas)
+			.then((renderer) => {
+				if (!renderer) throw new Error('WebGPU unavailable');
+				scene?.classList.add('is-ready');
+			})
+			.catch((error) => {
+				console.info('Hero scene disabled:', error);
+				canvas.remove();
+				fallback?.removeAttribute('hidden');
+			});
+	}
+</script>
 
 <style>
 	.hero-3d {
+		position: relative;
 		height: clamp(320px, 70vh, 720px);
+		overflow: hidden;
+	}
+
+	.canvas {
+		display: block;
+		width: 100%;
+		height: 100%;
+		opacity: 0;
+		transition: opacity 0.6s ease;
+	}
+
+	.is-ready .canvas {
+		opacity: 1;
+	}
+
+	/* Drag to orbit. On touch, vertical swipes still scroll the page */
+	.is-ready .canvas {
+		cursor: grab;
+		touch-action: pan-y;
+	}
+
+	.is-ready .canvas.is-dragging {
+		cursor: grabbing;
+	}
+
+	.fallback {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin: 0;
+		padding: 1.5rem;
+		color: var(--color-text-muted);
+		text-align: center;
+	}
+
+	.fallback[hidden] {
+		display: none;
 	}
 </style>
