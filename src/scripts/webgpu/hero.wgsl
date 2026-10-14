@@ -2,7 +2,7 @@
 // - Background stars live in log-polar space and scroll inward, so light "falls in"
 // - Thin-lens point-mass deflection bends the starfield around the hole
 // - Accretion disk is a tilted ellipse; its far side is faked as a lensed ring above the hole
-// - Two spiral light streams feed the disk from the sides
+// - Several spiral light streams feed the disk from all around
 // - Thin glowing filaments fall in from every direction, drifting through the palette
 // - "Camera" = azimuth (spins disk + streams in their plane) and inclination (disk squash)
 
@@ -45,6 +45,7 @@ const EINSTEIN = 0.34; // Einstein radius: how strongly the background bends
 const DISK_INNER = 0.27;
 const DISK_OUTER = 0.78;
 const STREAM_TWIST = 2.4; // how tightly the inflowing streams wind around the hole
+const STREAM_ARMS = 6.0; // spiral arms feeding the disk, evenly spaced around it
 const INFALL_COUNT = 7; // filaments falling in from all directions
 const INFALL_REACH = 2.4; // where filaments fade in from the screen edges
 const STAR_COLUMNS = 64.0; // star cells around the full circle
@@ -111,27 +112,32 @@ fn starfield(q: vec2f, time: f32) -> vec3f {
 	return color * star * twinkle * (h - 0.82) * 6.0;
 }
 
-// Two thin spiral arms of gas winding in from far out (the sides of the screen) and
+// Thin spiral arms of gas winding in from far out (the edges of the screen) and
 // merging into the disk; dashes along each arm scroll inward
 fn streams(dl: vec2f, time: f32) -> vec3f {
 	let r = max(length(dl), 1e-4);
 	let a = atan2(dl.y, dl.x);
 
-	// Angle of the arm at this radius; two arms half a turn apart
-	let arm = (a - STREAM_TWIST * log(r / DISK_INNER)) / PI;
-	let offset = abs(fract(arm + 0.5) - 0.5) * PI;
+	// Position across the arms at this radius; STREAM_ARMS arms evenly spaced
+	let arm = (a - STREAM_TWIST * log(r / DISK_INNER)) * STREAM_ARMS / TAU;
+	let offset = abs(fract(arm + 0.5) - 0.5) * TAU / STREAM_ARMS;
+	// Wrap the arm index so each arm keeps the same identity across the angle seam
+	let rawIndex = floor(arm + 0.5);
+	let seed = hash11(rawIndex - STREAM_ARMS * floor(rawIndex / STREAM_ARMS) + 3.0);
+
 	// Wide and diffuse far out, pinching thin as the arm spirals down onto the disk
 	let taper = smoothstep(DISK_INNER, 3.5, r);
-	let strand = gauss(offset, mix(0.035, 0.24, taper)) + 0.45 * gauss(abs(offset - mix(0.1, 0.3, taper)), mix(0.015, 0.09, taper));
+	let strand = gauss(offset, mix(0.03, 0.16, taper)) + 0.45 * gauss(abs(offset - mix(0.08, 0.2, taper)), mix(0.012, 0.06, taper));
 
-	let dashes = 0.55 + 0.45 * sin(log(r) * 16.0 + time * 4.0 + a);
+	let dashes = 0.55 + 0.45 * sin(log(r) * 16.0 + time * (3.4 + seed * 1.4) + a + seed * 20.0);
 	let fadeIn = smoothstep(DISK_INNER, DISK_OUTER, r);
 	let fadeOut = 1.0 - smoothstep(3.0, 5.5, r);
 	let falloff = 0.35 + 0.65 * DISK_OUTER / max(r, DISK_OUTER);
+	let strength = 0.55 + 0.45 * seed;
 
-	let shift = palette(log(r) * 0.4 + time * 0.1 + 0.15 * sin(time * 0.6 + a));
+	let shift = palette(log(r) * 0.4 + time * 0.1 + seed + 0.15 * sin(time * 0.6 + a));
 	let color = mix(u.colorAccent.rgb, shift, smoothstep(DISK_INNER, 2.5, r) * 0.8);
-	return color * strand * dashes * fadeIn * fadeOut * falloff * 0.9;
+	return color * strand * dashes * fadeIn * fadeOut * falloff * strength * 0.9;
 }
 
 fn hash11(x: f32) -> f32 {
