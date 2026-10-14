@@ -1,0 +1,90 @@
+---
+import { about } from '../../data/career';
+---
+
+<div class="about">
+	<div class="text">
+		<p class="bio">{about.bio}</p>
+		<dl>
+			<div>
+				<dt>Languages</dt>
+				<dd>{about.languages.join(', ')}</dd>
+			</div>
+			<div>
+				<dt>Interests</dt>
+				<dd>{about.interests.join(', ')}</dd>
+			</div>
+		</dl>
+	</div>
+	<div class="photo">
+		<img src={about.photo} alt={about.name} loading="lazy" />
+	</div>
+</div>
+
+<style>
+	/* PC: text left, photo centred in the right half. Mobile: text, then photo */
+	.about {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		align-items: center;
+		gap: clamp(1.5rem, 4vw, 3rem);
+	}
+
+	.text {
+		justify-self: center;
+		max-width: 65ch;
+	}
+
+	.photo {
+		display: flex;
+		justify-content: center;
+	}
+
+	img {
+		display: block;
+		width: 100%;
+		max-width: 300px;
+		aspect-ratio: 4 / 5;
+		object-fit: cover;
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius);
+		box-shadow:
+			0 0 0 4px var(--color-bg),
+			0 8px 24px rgb(0 0 0 / 0.45);
+	}
+
+	.bio {
+		margin: 0 0 1.5rem;
+		font-size: 1.05rem;
+		max-width: 65ch;
+	}
+
+	dl {
+		display: grid;
+		gap: 0.75rem;
+		margin: 0;
+	}
+
+	dt {
+		font-size: 0.8rem;
+		font-weight: 600;
+		color: var(--color-accent);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+
+	dd {
+		margin: 0;
+		color: var(--color-text-muted);
+	}
+
+	@media (max-width: 760px) {
+		.about {
+			grid-template-columns: 1fr;
+		}
+
+		img {
+			max-width: 240px;
+		}
+	}
+</style>

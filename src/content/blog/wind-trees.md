@@ -3,6 +3,7 @@ title: Procedural Wind Tree Animations
 description: GPU procedural wind animation inspired by Ghost of Tsushima and God of War.
 date: 2025-01-22
 image: /assets/img/WindAnim/Levels.png
+featured: true
 tags: [DirectX 12, GPU programming, Animation]
 ---
 

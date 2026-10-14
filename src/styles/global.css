@@ -16,6 +16,10 @@
 	--color-button-text: #0f1115;
 	--color-button-hover: #a3bffa;
 
+	--color-subsection-a: #171a21;
+	--color-subsection-b: #1f2430;
+	--wave-height: clamp(28px, 5vw, 64px);
+
 	--radius: 12px;
 
 	/* Tag palette: every color keeps white text at WCAG AA contrast (>= 4.5:1) */

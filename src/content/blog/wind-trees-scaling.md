@@ -3,6 +3,7 @@ title: Scaling Procedural Wind Tree Animations
 description: Optimizing the bending algorithm to render larger numbers of animated trees.
 date: 2025-02-22
 image: /assets/img/treeOpt/ShaderAnalisis.png
+featured: true
 tags: [DirectX 12, GPU programming, Animation]
 ---
 

@@ -1,0 +1,140 @@
+---
+import TagList from '../TagList.astro';
+import type { CareerEntry } from '../../data/career';
+
+interface Props {
+	title: string;
+	entries: CareerEntry[];
+	/** 'end' mirrors the timeline so it hugs a line on its right (desktop only) */
+	align?: 'start' | 'end';
+}
+
+const { title, entries, align = 'start' } = Astro.props;
+
+const latestYear = new Date().getFullYear();
+const endOf = (entry: CareerEntry) => entry.end ?? latestYear;
+
+// Latest first; entries that share no year with the previous one get a gap
+// proportional to the years between them
+const sorted = [...entries]
+	.sort((a, b) => endOf(b) - endOf(a) || b.start - a.start)
+	.map((entry, i, list) => {
+		const previous = list[i - 1];
+		const gapYears = previous && previous.start > endOf(entry) ? previous.start - endOf(entry) : 0;
+		const years = entry.end ? `${entry.start} – ${entry.end}` : `${entry.start} – present`;
+		return { ...entry, years, gapYears };
+	});
+---
+
+<div class:list={['group', align]}>
+	<h3>{title}</h3>
+	<ol class="timeline">
+		{
+			sorted.map((entry) => (
+				<li class:list={{ gap: entry.gapYears > 0 }} style={`--gap-years: ${entry.gapYears}`}>
+					<span class="years">{entry.years}</span>
+					<h4>{entry.role}</h4>
+					<span class="place">{entry.place}</span>
+					<p>{entry.description}</p>
+					{entry.skills && <TagList tags={entry.skills} />}
+				</li>
+			))
+		}
+	</ol>
+</div>
+
+<style>
+	h3 {
+		margin: 0 0 1.25rem;
+		padding: 0 1.5rem;
+		font-size: 1.15rem;
+		color: var(--color-text-muted);
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+	}
+
+	.timeline {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	li {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+		padding: 0 0 1.75rem 1.5rem;
+		border-left: 2px solid var(--color-border);
+	}
+
+	li:last-child {
+		padding-bottom: 0.25rem;
+	}
+
+	li.gap {
+		margin-top: calc(var(--gap-years) * var(--timeline-year-gap, 2.5rem));
+	}
+
+	li::before {
+		content: '';
+		position: absolute;
+		top: 0.35rem;
+		left: -7px;
+		width: 12px;
+		height: 12px;
+		border-radius: 50%;
+		background: var(--color-accent);
+		box-shadow: 0 0 0 4px var(--color-bg);
+	}
+
+	.years {
+		font-size: 0.8rem;
+		font-weight: 600;
+		color: var(--color-accent);
+	}
+
+	h4 {
+		margin: 0;
+		font-size: 1.1rem;
+		line-height: 1.3;
+	}
+
+	.place {
+		color: var(--color-text-muted);
+		font-size: 0.9rem;
+	}
+
+	p {
+		max-width: 60ch;
+		margin: 0.25rem 0 0.4rem;
+		color: var(--color-text-muted);
+	}
+
+	@media (min-width: 761px) {
+		.end h3,
+		.end li {
+			text-align: right;
+		}
+
+		.end li {
+			align-items: flex-end;
+			padding: 0 1.5rem 1.75rem 0;
+			border-left: none;
+			border-right: 2px solid var(--color-border);
+		}
+
+		.end li:last-child {
+			padding-bottom: 0.25rem;
+		}
+
+		.end li::before {
+			left: auto;
+			right: -7px;
+		}
+
+		.end :global(.tags) {
+			justify-content: flex-end;
+		}
+	}
+</style>

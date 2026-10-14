@@ -1,0 +1,202 @@
+---
+import TagList from '../TagList.astro';
+import Button from '../Button.astro';
+
+interface Props {
+	/** Position in the list: picks the background color and stacking order */
+	index: number;
+	href: string;
+	title: string;
+	description: string;
+	image?: string;
+	tags?: string[];
+	meta?: string;
+	cta?: string;
+}
+
+const { index, href, title, description, image, tags = [], meta, cta = 'Learn more →' } =
+	Astro.props;
+
+// Transitions are drawn in a 1440x80 box: flat along the top, shaped along the bottom
+const WIDTH = 1440;
+
+// Small seeded PRNG so every subsection gets its own, stable wave shape
+const seededRandom = (seed: string) => {
+	let h = 2166136261;
+	for (const char of seed) h = Math.imul(h ^ char.charCodeAt(0), 16777619);
+	return () => {
+		h = Math.imul(h ^ (h >>> 15), 2246822507);
+		h = Math.imul(h ^ (h >>> 13), 3266489909);
+		return ((h ^= h >>> 16) >>> 0) / 4294967296;
+	};
+};
+
+const PEAKS = 3;
+const AMPLITUDE = 18;
+
+// Every wave has the same 3 peaks and height; the seed only shifts where the pattern starts
+const generateWave = (seed: string) => {
+	const phase = seededRandom(seed)() * Math.PI * 2;
+	const steps = 180;
+
+	const points: string[] = [];
+	for (let i = steps; i >= 0; i--) {
+		const t = i / steps;
+		const y = 44 + AMPLITUDE * Math.sin(t * PEAKS * Math.PI * 2 + phase);
+		points.push(`${(t * WIDTH).toFixed(1)},${y.toFixed(1)}`);
+	}
+	return `M0,0H${WIDTH}V${points[0].split(',')[1]}L${points.join(' ')}Z`;
+};
+
+// Straight edge tilted across the full width; `rising` flips which side is lower
+const generateTilt = (rising: boolean) => (rising ? 'M0,0H1440V16L0,72Z' : 'M0,0H1440V72L0,16Z');
+
+// Transitions alternate tilt / wave / tilt / ..., and each section opens with a tilt.
+// Transition 0 sits above the first band; transition i + 1 sits below band i.
+const transition = (n: number) =>
+	n % 2 === 0 ? generateTilt(n % 4 === 0) : generateWave(`${title}:${n}`);
+
+const bottomEdge = transition(index + 1);
+const topEdge = index === 0 ? transition(0) : undefined;
+const tone = index % 2 === 0 ? 'tone-a' : 'tone-b';
+---
+
+<article class:list={['subsection', tone]} style={`z-index: ${100 - index}`}>
+	<div class="content">
+		<div class="body">
+			{meta && <span class="meta">{meta}</span>}
+			<h3>{title}</h3>
+			<TagList tags={tags} />
+			<p>{description}</p>
+			<div class="footer">
+				<Button href={href}>{cta}</Button>
+			</div>
+		</div>
+		{
+			image && (
+				<div class="media">
+					<img src={image} alt={title} loading="lazy" />
+				</div>
+			)
+		}
+	</div>
+	{
+		topEdge && (
+			<svg class="wave wave-top" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true">
+				<path d={topEdge} />
+			</svg>
+		)
+	}
+	<svg class="wave" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true">
+		<path d={bottomEdge} />
+	</svg>
+</article>
+
+<style>
+	.subsection {
+		--band-bg: var(--color-subsection-a);
+		position: relative;
+		--band-pad-y: clamp(1.5rem, 5vw, 4.25rem);
+		padding: var(--band-pad-y) var(--section-pad-x, 1.5rem);
+		background: var(--band-bg);
+	}
+
+	.tone-b {
+		--band-bg: var(--color-subsection-b);
+	}
+
+	/* The previous band's wave overlaps this one, so push the content below it */
+	.subsection + .subsection {
+		padding-top: calc(var(--band-pad-y) + var(--wave-height));
+	}
+
+	.content {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		align-items: center;
+		gap: clamp(1.25rem, 3vw, 2.5rem);
+	}
+
+	.body {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+
+	.meta {
+		font-size: 0.8rem;
+		font-weight: 600;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+		color: var(--color-accent);
+	}
+
+	h3 {
+		margin: 0;
+		font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+		line-height: 1.2;
+	}
+
+	p {
+		max-width: 60ch;
+		margin: 0;
+		color: var(--color-text-muted);
+	}
+
+	.footer {
+		padding-top: 0.5rem;
+	}
+
+	.media {
+		display: flex;
+		justify-content: center;
+	}
+
+	img {
+		display: block;
+		width: 100%;
+		max-width: 420px;
+		aspect-ratio: 16 / 9;
+		object-fit: cover;
+		border: 1px solid var(--color-border);
+		border-radius: calc(var(--radius) - 4px);
+		box-shadow:
+			0 0 0 4px var(--color-bg),
+			0 12px 32px rgb(0 0 0 / 0.5);
+	}
+
+	.wave {
+		position: absolute;
+		top: calc(100% - 1px); /* overlap 1px to hide sub-pixel seams */
+		left: 0;
+		display: block;
+		width: 100%;
+		height: var(--wave-height);
+		fill: var(--band-bg);
+	}
+
+	/* Mirrored wave rising above the first band, out of the page background */
+	.wave-top {
+		top: auto;
+		bottom: calc(100% - 1px);
+		transform: scaleY(-1);
+	}
+
+	/* Nudge the text in from the edge on wider screens */
+	@media (min-width: 761px) {
+		.body {
+			padding-left: clamp(1rem, 4vw, 4rem);
+		}
+	}
+
+	@media (max-width: 760px) {
+		.content {
+			grid-template-columns: 1fr;
+		}
+
+		.media {
+			order: -1;
+			justify-content: flex-start;
+		}
+	}
+</style>
