@@ -66,11 +66,8 @@ const { href, title, description, image, tags = [] } = Astro.props;
 		width: 75%;
 		aspect-ratio: 16 / 9;
 		object-fit: cover;
-		border: 1px solid var(--color-border);
 		border-radius: calc(var(--radius) - 4px);
-		box-shadow:
-			0 0 0 4px var(--color-bg),
-			0 8px 24px rgb(0 0 0 / 0.45);
+		box-shadow: 0 8px 24px var(--color-shadow);
 	}
 
 	h2 {

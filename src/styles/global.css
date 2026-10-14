@@ -1,41 +1,54 @@
 :root {
 	color-scheme: dark;
 
-	--color-bg: #0f1115;
-	--color-surface: #171a21;
-	--color-border: #2a2f3a;
-	--color-text: #e6e8ec;
-	--color-text-muted: #9aa1ad;
-	--color-accent: #7aa2f7;
-	--color-nav-active: var(--color-accent);
-	--color-nav-active-text: #0f1115;
-	--color-nav-hover: #00c80d;
-    --color-nav-hover-text: var(--color-text);
+	/* Backgrounds */
+	--color-bg: #080f14;
+	--color-surface: #121821;
+	--color-surface-elevated: #1a2634;
+	--color-code-bg: #02090d;
+	--color-border: #2a3b4f;
 
-	--color-button: var(--color-accent);
-	--color-button-text: #0f1115;
-	--color-button-hover: #a3bffa;
+	/* Brand */
+	--color-primary: #22d3a7;
+	--color-secondary: #3b82f6;
+	--color-accent: #7af3d0;
 
-	--color-subsection-a: #171a21;
-	--color-subsection-b: #1f2430;
+	/* Text */
+	--color-text: #e2e8f0;
+	--color-text-muted: #94a3b8;
+	--color-text-on-primary: var(--color-bg);
+
+	--color-shadow: rgb(2 9 13 / 0.6);
+
+	--color-nav-active: var(--color-primary);
+	--color-nav-active-text: var(--color-text-on-primary);
+	--color-nav-hover: var(--color-surface-elevated);
+	--color-nav-hover-text: var(--color-accent);
+
+	--color-button: var(--color-primary);
+	--color-button-text: var(--color-text-on-primary);
+	--color-button-hover: var(--color-accent);
+
+	--color-subsection-a: var(--color-surface);
+	--color-subsection-b: var(--color-surface-elevated);
 	--wave-height: clamp(28px, 5vw, 64px);
 
 	--radius: 12px;
 
-	/* Tag palette: every color keeps white text at WCAG AA contrast (>= 4.5:1) */
+	/* Tag palette (cool tones to match the scheme): every color keeps white text at WCAG AA contrast (>= 4.5:1) */
 	--tag-text: #ffffff;
-	--tag-color-0: #c0262d;
-	--tag-color-1: #b54708;
-	--tag-color-2: #8a6100;
-	--tag-color-3: #2f7d1f;
-	--tag-color-4: #047857;
-	--tag-color-5: #0e7490;
-	--tag-color-6: #1d5fd1;
-	--tag-color-7: #4f46e5;
-	--tag-color-8: #7e3bd9;
-	--tag-color-9: #a21caf;
-	--tag-color-10: #be185d;
-	--tag-color-11: #64748b;
+	--tag-color-0: #0f766e;
+	--tag-color-1: #047857;
+	--tag-color-2: #0e7490;
+	--tag-color-3: #0369a1;
+	--tag-color-4: #1d4ed8;
+	--tag-color-5: #4338ca;
+	--tag-color-6: #6d28d9;
+	--tag-color-7: #7e22ce;
+	--tag-color-8: #a21caf;
+	--tag-color-9: #be123c;
+	--tag-color-10: #b45309;
+	--tag-color-11: #475569;
 
 	--font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
@@ -55,5 +68,38 @@ body {
 }
 
 a {
+	color: var(--color-primary);
+}
+
+a:hover {
 	color: var(--color-accent);
+}
+
+::selection {
+	background: color-mix(in srgb, var(--color-primary) 35%, transparent);
+	color: var(--color-text);
+}
+
+code,
+pre {
+	font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+	background: var(--color-code-bg);
+	border: 1px solid var(--color-border);
+	border-radius: 6px;
+}
+
+code {
+	padding: 0.1em 0.35em;
+	font-size: 0.9em;
+}
+
+pre {
+	padding: 1rem 1.25rem;
+	overflow-x: auto;
+}
+
+pre code {
+	padding: 0;
+	background: none;
+	border: none;
 }
