@@ -3,6 +3,7 @@
 // - Thin-lens point-mass deflection bends the starfield around the hole
 // - Accretion disk is a tilted ellipse; its far side is faked as a lensed ring above the hole
 // - Two spiral light streams feed the disk from the sides
+// - Thin glowing filaments fall in from every direction, drifting through the palette
 // - "Camera" = azimuth (spins disk + streams in their plane) and inclination (disk squash)
 
 struct Uniforms {
@@ -44,6 +45,8 @@ const EINSTEIN = 0.34; // Einstein radius: how strongly the background bends
 const DISK_INNER = 0.27;
 const DISK_OUTER = 0.78;
 const STREAM_TWIST = 2.4; // how tightly the inflowing streams wind around the hole
+const INFALL_COUNT = 7; // filaments falling in from all directions
+const INFALL_REACH = 2.4; // where filaments fade in from the screen edges
 const STAR_COLUMNS = 64.0; // star cells around the full circle
 
 fn hash21(p: vec2f) -> f32 {
@@ -124,8 +127,62 @@ fn streams(dl: vec2f, time: f32) -> vec3f {
 	let fadeOut = 1.0 - smoothstep(3.0, 5.5, r);
 	let falloff = 0.35 + 0.65 * DISK_OUTER / max(r, DISK_OUTER);
 
-	let color = mix(u.colorAccent.rgb, u.colorPrimary.rgb, smoothstep(DISK_OUTER, 2.5, r));
+	let shift = palette(log(r) * 0.4 + time * 0.1 + 0.15 * sin(time * 0.6 + a));
+	let color = mix(u.colorAccent.rgb, shift, smoothstep(DISK_INNER, 2.5, r) * 0.8);
 	return color * strand * dashes * fadeIn * fadeOut * falloff * 0.9;
+}
+
+fn hash11(x: f32) -> f32 {
+	return fract(sin(x * 127.1) * 43758.5453);
+}
+
+// Smoothly cycles primary -> secondary -> accent -> primary as t goes 0 -> 1
+fn palette(t: f32) -> vec3f {
+	let k = fract(t) * 3.0;
+	let c0 = u.colorPrimary.rgb;
+	let c1 = u.colorSecondary.rgb;
+	let c2 = u.colorAccent.rgb;
+	if (k < 1.0) {
+		return mix(c0, c1, smoothstep(0.0, 1.0, k));
+	} else if (k < 2.0) {
+		return mix(c1, c2, smoothstep(1.0, 2.0, k));
+	}
+	return mix(c2, c0, smoothstep(2.0, 3.0, k));
+}
+
+// Thin glowing filaments spiralling in from every direction in screen space.
+// Pulses and colour both travel inward, and each filament drifts through the palette.
+fn infall(p: vec2f, time: f32) -> vec3f {
+	let r = max(length(p), 1e-4);
+	let a = atan2(p.y, p.x);
+	let logR = log(r);
+
+	var total = vec3f(0.0);
+	for (var i = 0; i < INFALL_COUNT; i++) {
+		let fi = f32(i);
+		let seed = hash11(fi + 1.0);
+		let base = fi / f32(INFALL_COUNT) * TAU + seed * 0.7;
+		let twist = 0.5 + seed * 1.1;
+
+		// Distance across the filament: wrapped angle to its centre line, scaled by radius
+		let diff = a - (base + twist * logR);
+		let wrapped = diff - TAU * floor((diff + PI) / TAU);
+		let across = r * wrapped / sqrt(1.0 + twist * twist);
+
+		let width = 0.012 + 0.01 * seed;
+		let core = gauss(across, width);
+		let glow = gauss(across, width * 5.0) * 0.25;
+
+		let pulses = 0.45 + 0.55 * pow(0.5 + 0.5 * sin(logR * 10.0 + time * (3.5 + seed * 2.0) + seed * 30.0), 2.0);
+		let hue = palette(logR * 0.45 + time * (0.08 + seed * 0.06) + seed + 0.2 * sin(time * 0.9 + fi * 1.7));
+		let shimmer = 0.85 + 0.15 * sin(time * 2.3 + fi * 2.1);
+
+		let fadeIn = 1.0 - smoothstep(INFALL_REACH * 0.55, INFALL_REACH, r);
+		let fadeOut = smoothstep(HORIZON, HORIZON * 1.8, r);
+
+		total += hue * (core + glow) * pulses * shimmer * fadeIn * fadeOut;
+	}
+	return total * 0.75;
 }
 
 fn rotate(v: vec2f, angle: f32) -> vec2f {
@@ -145,11 +202,15 @@ fn fs_main(in: VertexOut) -> @location(0) vec4f {
 	// --- Lensed background -------------------------------------------------
 	// Thin-lens point mass: what we see at p comes from p * (1 - E^2 / r^2)
 	let q = p * (1.0 - (EINSTEIN * EINSTEIN) / (r * r));
-	var color = starfield(q, time);
+	// Background turns with the camera so the orbit reads even where the disk is dim
+	var color = starfield(rotate(q, u.camera.x * 0.3), time);
 
 	// Faint glow of light piling up around the hole
 	color += u.colorSecondary.rgb * 0.18 * exp(-r * 2.2);
 	color += u.colorPrimary.rgb * 0.25 * gauss(r - HORIZON * 1.6, HORIZON * 0.9);
+
+	// --- Light falling in from every direction (behind the hole, so it vanishes into it)
+	color += infall(rotate(p, u.camera.x * 0.5), time);
 
 	// --- Far side of the disk, lensed into an arch over the hole -------------
 	let tilt = clamp(u.camera.y, 0.06, 1.0);

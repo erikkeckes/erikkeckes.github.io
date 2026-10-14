@@ -14,7 +14,12 @@ const MIN_INCLINATION = 0.06;
 const MAX_INCLINATION = 0.95;
 const DRAG_AZIMUTH_SPEED = 0.008; // radians per pixel
 const DRAG_INCLINATION_SPEED = 0.003; // per pixel
-const IDLE_SPIN_SPEED = 0.05; // radians per second while nobody is dragging
+// Idle orbit: the camera circles the hole and gently bobs above and below the disk
+const IDLE_SPIN_SPEED = 0.12; // radians per second
+const IDLE_BOB_AMOUNT = 0.12; // inclination swing either side of where the user left it
+const IDLE_BOB_SPEED = 0.25; // radians per second of the bob cycle
+const IDLE_RESUME_DELAY = 2; // seconds after a drag before the orbit picks up again
+const IDLE_FADE_IN = 1.5; // seconds for the orbit to ease back to full speed
 const CAMERA_DAMPING = 8; // higher = snappier follow
 
 // Render below native resolution and let CSS upscale: the scene is all soft glow, so it
@@ -103,6 +108,7 @@ export async function createHeroRenderer(canvas: HTMLCanvasElement): Promise<Her
 	const onPointerUp = (event: PointerEvent) => {
 		if (!dragging || event.pointerId !== dragging.pointerId) return;
 		dragging = null;
+		idleTimer = -IDLE_RESUME_DELAY;
 		canvas.classList.remove('is-dragging');
 	};
 
@@ -112,13 +118,28 @@ export async function createHeroRenderer(canvas: HTMLCanvasElement): Promise<Her
 	canvas.addEventListener('pointercancel', onPointerUp);
 
 	let lastCameraUpdate = 0;
+	// Counts up from a negative delay after each drag; the orbit blends in once it passes 0
+	let idleTimer = IDLE_FADE_IN;
+	let bobPhase = 0;
 	const updateCamera = (timeMs: number) => {
 		const dt = lastCameraUpdate ? Math.min((timeMs - lastCameraUpdate) / 1000, 0.1) : 0;
 		lastCameraUpdate = timeMs;
-		if (!dragging && !reducedMotion) target.azimuth += IDLE_SPIN_SPEED * dt;
+
+		let orbit = 0;
+		if (!dragging && !reducedMotion) {
+			idleTimer += dt;
+			orbit = Math.min(Math.max(idleTimer / IDLE_FADE_IN, 0), 1);
+		}
+		// Advancing by orbit * dt keeps the motion continuous when it fades in or out
+		target.azimuth += IDLE_SPIN_SPEED * dt * orbit;
+		bobPhase += IDLE_BOB_SPEED * dt * orbit;
+
+		const bob = Math.sin(bobPhase) * IDLE_BOB_AMOUNT * orbit;
+		const inclination = Math.min(MAX_INCLINATION, Math.max(MIN_INCLINATION, target.inclination + bob));
+
 		const ease = 1 - Math.exp(-CAMERA_DAMPING * dt);
 		camera.azimuth += (target.azimuth - camera.azimuth) * ease;
-		camera.inclination += (target.inclination - camera.inclination) * ease;
+		camera.inclination += (inclination - camera.inclination) * ease;
 	};
 
 	let renderScale = MAX_RENDER_SCALE;
