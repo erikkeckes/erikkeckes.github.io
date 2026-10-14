@@ -120,7 +120,9 @@ fn streams(dl: vec2f, time: f32) -> vec3f {
 	// Angle of the arm at this radius; two arms half a turn apart
 	let arm = (a - STREAM_TWIST * log(r / DISK_INNER)) / PI;
 	let offset = abs(fract(arm + 0.5) - 0.5) * PI;
-	let strand = gauss(offset, 0.1 + 0.03 * r) + 0.45 * gauss(abs(offset - 0.22), 0.05);
+	// Wide and diffuse far out, pinching thin as the arm spirals down onto the disk
+	let taper = smoothstep(DISK_INNER, 3.5, r);
+	let strand = gauss(offset, mix(0.035, 0.24, taper)) + 0.45 * gauss(abs(offset - mix(0.1, 0.3, taper)), mix(0.015, 0.09, taper));
 
 	let dashes = 0.55 + 0.45 * sin(log(r) * 16.0 + time * 4.0 + a);
 	let fadeIn = smoothstep(DISK_INNER, DISK_OUTER, r);
@@ -169,7 +171,9 @@ fn infall(p: vec2f, time: f32) -> vec3f {
 		let wrapped = diff - TAU * floor((diff + PI) / TAU);
 		let across = r * wrapped / sqrt(1.0 + twist * twist);
 
-		let width = 0.012 + 0.01 * seed;
+		// Broad where the filament enters, narrowing to a thread near the horizon
+		let taper = mix(0.3, 2.6, smoothstep(HORIZON, INFALL_REACH, r));
+		let width = (0.012 + 0.01 * seed) * taper;
 		let core = gauss(across, width);
 		let glow = gauss(across, width * 5.0) * 0.25;
 
