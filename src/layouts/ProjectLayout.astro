@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import BaseLayout from './BaseLayout.astro';
+import TagList from '../components/TagList.astro';
 
 interface Props {
 	project: CollectionEntry<'projects'>;
@@ -11,8 +12,8 @@ const { data } = Astro.props.project;
 
 <BaseLayout title={`${data.title} | Erik Keckes`} description={data.description}>
 	<article class="entry">
-		{data.category && <span class="meta">{data.category}</span>}
 		<h1>{data.title}</h1>
+		<TagList tags={data.tags} />
 		<p class="lead">{data.description}</p>
 		<slot />
 	</article>
@@ -22,18 +23,11 @@ const { data } = Astro.props.project;
 	.entry {
 		max-width: 800px;
 		margin: 0 auto;
-		padding: 2.5rem 1.5rem;
-	}
-
-	.meta {
-		font-size: 0.8rem;
-		color: var(--color-accent);
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
+		padding: 1.5rem;
 	}
 
 	h1 {
-		margin: 0.25rem 0 0.5rem;
+		margin: 0 0 0.75rem;
 	}
 
 	.lead {

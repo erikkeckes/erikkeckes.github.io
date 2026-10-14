@@ -2,7 +2,7 @@
 title: Inferno
 description: High-octane parkour speedrunning game set in Hell, inspired by Ghostrunner and Neon White.
 image: /assets/img/Inferno/player1.png
-category: Side Project / School
+tags: [School, Game]
 importance: 3
 ---
 

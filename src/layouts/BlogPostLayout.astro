@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import BaseLayout from './BaseLayout.astro';
+import TagList from '../components/TagList.astro';
 
 interface Props {
 	post: CollectionEntry<'blog'>;
@@ -12,8 +13,9 @@ const date = data.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'lon
 
 <BaseLayout title={`${data.title} | Erik Keckes`} description={data.description}>
 	<article class="entry">
-		<time class="meta" datetime={data.date.toISOString()}>{date}</time>
 		<h1>{data.title}</h1>
+		<TagList tags={data.tags} />
+		<time class="meta" datetime={data.date.toISOString()}>{date}</time>
 		<p class="lead">{data.description}</p>
 		<slot />
 	</article>
@@ -23,10 +25,12 @@ const date = data.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'lon
 	.entry {
 		max-width: 800px;
 		margin: 0 auto;
-		padding: 2.5rem 1.5rem;
+		padding: 1.5rem;
 	}
 
 	.meta {
+		display: block;
+		margin-top: 0.75rem;
 		font-size: 0.8rem;
 		color: var(--color-accent);
 		text-transform: uppercase;
@@ -34,7 +38,7 @@ const date = data.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'lon
 	}
 
 	h1 {
-		margin: 0.25rem 0 0.5rem;
+		margin: 0 0 0.75rem;
 	}
 
 	.lead {

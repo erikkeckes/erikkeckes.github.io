@@ -12,7 +12,26 @@
 	--color-nav-hover: #00c80d;
     --color-nav-hover-text: var(--color-text);
 
+	--color-button: var(--color-accent);
+	--color-button-text: #0f1115;
+	--color-button-hover: #a3bffa;
+
 	--radius: 12px;
+
+	/* Tag palette: every color keeps white text at WCAG AA contrast (>= 4.5:1) */
+	--tag-text: #ffffff;
+	--tag-color-0: #c0262d;
+	--tag-color-1: #b54708;
+	--tag-color-2: #8a6100;
+	--tag-color-3: #2f7d1f;
+	--tag-color-4: #047857;
+	--tag-color-5: #0e7490;
+	--tag-color-6: #1d5fd1;
+	--tag-color-7: #4f46e5;
+	--tag-color-8: #7e3bd9;
+	--tag-color-9: #a21caf;
+	--tag-color-10: #be185d;
+	--tag-color-11: #64748b;
 
 	--font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }

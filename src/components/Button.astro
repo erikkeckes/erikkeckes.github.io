@@ -1,0 +1,56 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+interface Props extends HTMLAttributes<'a'> {
+	href: string;
+	variant?: 'primary' | 'outline';
+}
+
+const { href, variant = 'primary', class: className, ...attrs } = Astro.props;
+---
+
+<a href={href} class:list={['button', variant, className]} {...attrs}>
+	<slot />
+</a>
+
+<style>
+	.button {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		padding: 0.5rem 1.1rem;
+		border: 1px solid var(--color-button);
+		border-radius: 8px;
+		font-size: 0.9rem;
+		font-weight: 600;
+		line-height: 1.2;
+		text-decoration: none;
+		white-space: nowrap;
+		transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+	}
+
+	.primary {
+		background: var(--color-button);
+		color: var(--color-button-text);
+	}
+
+	.primary:hover {
+		background: var(--color-button-hover);
+		border-color: var(--color-button-hover);
+	}
+
+	.outline {
+		background: transparent;
+		color: var(--color-button);
+	}
+
+	.outline:hover {
+		background: var(--color-button);
+		color: var(--color-button-text);
+	}
+
+	.button:focus-visible {
+		outline: 2px solid var(--color-button-hover);
+		outline-offset: 2px;
+	}
+</style>

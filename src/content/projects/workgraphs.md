@@ -2,7 +2,7 @@
 title: DX12 Workgraph rendering
 description: GPU-driven rendering pipeline built on experimental DirectX 12 work graphs, with frustum and Hi-Z occlusion culling.
 image: /assets/img/wg/bistro.png
-category: Side Project / School
+tags: [School, DirectX 12, Work Graphs, GPU-driven rendering]
 importance: 1
 ---
 
