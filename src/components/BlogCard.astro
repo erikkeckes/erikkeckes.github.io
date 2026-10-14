@@ -1,0 +1,42 @@
+---
+interface Props {
+	href: string;
+	title: string;
+	description: string;
+}
+
+const { href, title, description } = Astro.props;
+---
+
+<a class="card" href={href}>
+	<h2>{title}</h2>
+	<p>{description}</p>
+</a>
+
+<style>
+	.card {
+		display: block;
+		padding: 1.25rem 1.5rem;
+		background: var(--color-surface);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius);
+		color: var(--color-text);
+		text-decoration: none;
+		transition: transform 0.15s, border-color 0.15s;
+	}
+
+	.card:hover {
+		transform: translateY(-3px);
+		border-color: var(--color-nav-active);
+	}
+
+	h2 {
+		margin: 0 0 0.5rem;
+		font-size: 1.15rem;
+	}
+
+	p {
+		margin: 0;
+		color: var(--color-text-muted);
+	}
+</style>

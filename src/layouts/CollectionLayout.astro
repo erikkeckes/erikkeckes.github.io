@@ -1,0 +1,47 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+	title: string;
+	columns?: 1 | 2;
+	isEmpty?: boolean;
+}
+
+const { title, columns = 1, isEmpty = false } = Astro.props;
+---
+
+<BaseLayout title={`${title} | Erik Keckes`}>
+	<section class="showcase">
+		{
+			isEmpty ? (
+				<p class="empty">Nothing here yet.</p>
+			) : (
+				<div class:list={['grid', { 'two-columns': columns === 2 }]}>
+					<slot />
+				</div>
+			)
+		}
+	</section>
+</BaseLayout>
+
+<style>
+	.showcase {
+		padding: clamp(1.25rem, 4vw, 2.5rem) clamp(1rem, 3vw, 1.5rem);
+	}
+
+	.empty {
+		color: var(--color-text-muted);
+	}
+
+	.grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1.5rem;
+	}
+
+	@media (min-width: 641px) {
+		.grid.two-columns {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+</style>

@@ -1,0 +1,42 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+	project: CollectionEntry<'projects'>;
+}
+
+const { data } = Astro.props.project;
+---
+
+<BaseLayout title={`${data.title} | Erik Keckes`} description={data.description}>
+	<article class="entry">
+		{data.category && <span class="meta">{data.category}</span>}
+		<h1>{data.title}</h1>
+		<p class="lead">{data.description}</p>
+		<slot />
+	</article>
+</BaseLayout>
+
+<style>
+	.entry {
+		max-width: 800px;
+		margin: 0 auto;
+		padding: 2.5rem 1.5rem;
+	}
+
+	.meta {
+		font-size: 0.8rem;
+		color: var(--color-accent);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+
+	h1 {
+		margin: 0.25rem 0 0.5rem;
+	}
+
+	.lead {
+		color: var(--color-text-muted);
+	}
+</style>

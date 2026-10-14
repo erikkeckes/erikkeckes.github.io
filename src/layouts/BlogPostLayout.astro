@@ -1,0 +1,43 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+	post: CollectionEntry<'blog'>;
+}
+
+const { data } = Astro.props.post;
+const date = data.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+---
+
+<BaseLayout title={`${data.title} | Erik Keckes`} description={data.description}>
+	<article class="entry">
+		<time class="meta" datetime={data.date.toISOString()}>{date}</time>
+		<h1>{data.title}</h1>
+		<p class="lead">{data.description}</p>
+		<slot />
+	</article>
+</BaseLayout>
+
+<style>
+	.entry {
+		max-width: 800px;
+		margin: 0 auto;
+		padding: 2.5rem 1.5rem;
+	}
+
+	.meta {
+		font-size: 0.8rem;
+		color: var(--color-accent);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+
+	h1 {
+		margin: 0.25rem 0 0.5rem;
+	}
+
+	.lead {
+		color: var(--color-text-muted);
+	}
+</style>

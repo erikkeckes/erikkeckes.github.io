@@ -1,0 +1,25 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import CollectionLayout from './CollectionLayout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+
+interface Props {
+	projects: CollectionEntry<'projects'>[];
+}
+
+const { projects } = Astro.props;
+---
+
+<CollectionLayout title="Projects" isEmpty={projects.length === 0}>
+	{
+		projects.map(({ id, data }) => (
+			<ProjectCard
+				href={`/projects/${id}`}
+				title={data.title}
+				description={data.description}
+				image={data.image}
+				category={data.category}
+			/>
+		))
+	}
+</CollectionLayout>
