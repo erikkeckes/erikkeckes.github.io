@@ -3,7 +3,7 @@ title: PBR renderer
 description: Physically based renderer for PlayStation 5 and DirectX 12 on PC, using glTF models with bloom and tone mapping post-processing.
 image: /assets/img/PBR/pbr2.png
 video: /assets/video/PBR/PBR.mp4
-featured: true
+featured: false
 tags: [School, PlayStation 5, DirectX 12, PBR, glTF]
 importance: 2
 type: School

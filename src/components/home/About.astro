@@ -6,16 +6,6 @@ import { about } from '../../data/career';
 	<div class="text">
 		<h2>About me</h2>
 		<p class="bio">{about.bio}</p>
-		<dl>
-			<div>
-				<dt>Languages</dt>
-				<dd>{about.languages.join(', ')}</dd>
-			</div>
-			<div>
-				<dt>Interests</dt>
-				<dd>{about.interests.join(', ')}</dd>
-			</div>
-		</dl>
 	</div>
 	<div class="photo">
 		<img src={about.photo} alt={about.name} loading="lazy" />

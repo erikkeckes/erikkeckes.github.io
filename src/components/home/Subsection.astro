@@ -75,6 +75,7 @@ const tone = index % 2 === 0 ? 'tone-a' : 'tone-b';
 			{meta && !image && <span class="meta">{meta}</span>}
 			<h3>{title}</h3>
 			<TagList tags={tags} />
+			{meta && <span class="meta">{meta}</span>}
 			<p>{description}</p>
 			<div class="footer">
 				<Button href={href}>{cta}</Button>
@@ -84,7 +85,6 @@ const tone = index % 2 === 0 ? 'tone-a' : 'tone-b';
 			image && (
 				<div class="media">
 					<div class="frame">
-						{meta && <span class="meta">{meta}</span>}
 						<img src={image} alt={title} loading="lazy" />
 					</div>
 				</div>
