@@ -1,0 +1,10 @@
+---
+import { getCollection } from 'astro:content';
+import ProjectCollectionLayout from '../../layouts/ProjectCollectionLayout.astro';
+
+const projects = (await getCollection('projects')).sort(
+	(a, b) => a.data.importance - b.data.importance,
+);
+---
+
+<ProjectCollectionLayout projects={projects} />

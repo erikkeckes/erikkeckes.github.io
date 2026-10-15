@@ -1,0 +1,60 @@
+---
+import { technologies } from '../../data/technologies';
+---
+
+<ul class="tech" aria-label="Technologies I use">
+	{
+		technologies.map(({ name, path, short }) => (
+			<li title={name}>
+				{path ? (
+					<svg viewBox="0 0 24 24" fill="currentColor" role="img" aria-label={name}>
+						<path d={path} />
+					</svg>
+				) : (
+					<span class="mark" role="img" aria-label={name}>
+						{short ?? name}
+					</span>
+				)}
+			</li>
+		))
+	}
+</ul>
+
+<style>
+	.tech {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		align-items: center;
+		gap: clamp(1.5rem, 4vw, 3rem);
+		margin: clamp(2.5rem, 6vw, 4rem) 0 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	li {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 40px;
+		color: var(--color-text-muted);
+		transition: color 0.15s, transform 0.15s;
+	}
+
+	li:hover {
+		color: var(--color-text);
+		transform: translateY(-2px);
+	}
+
+	svg {
+		width: 40px;
+		height: 40px;
+	}
+
+	.mark {
+		font-size: 1.35rem;
+		font-weight: 800;
+		letter-spacing: -0.02em;
+		line-height: 1;
+	}
+</style>

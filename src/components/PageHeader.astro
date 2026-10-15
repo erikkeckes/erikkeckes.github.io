@@ -1,0 +1,138 @@
+---
+import { socials } from '../data/socials';
+
+const navLinks = [
+	{ href: '/', label: 'Home' },
+	{ href: '/projects', label: 'Projects' },
+	{ href: '/blog', label: 'Blog' },
+];
+
+
+const currentPath = Astro.url.pathname;
+const isActive = (href: string) =>
+	href === '/' ? currentPath === '/' : currentPath.startsWith(href);
+---
+
+<header class="page-header">
+	<nav class="nav">
+		<ul class="nav-links">
+			{
+				navLinks.map(({ href, label }) => (
+					<li>
+						<a href={href} aria-current={isActive(href) ? 'page' : undefined}>
+							{label}
+						</a>
+					</li>
+				))
+			}
+		</ul>
+		<div class="right">
+			<ul class="socials">
+			{
+				socials.map(({ href, label, path }) => (
+					<li>
+						<a href={href} aria-label={label} title={label} target="_blank" rel="noopener noreferrer">
+							<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+								<path d={path} />
+							</svg>
+						</a>
+					</li>
+				))
+			}
+			</ul>
+			<a href="/" class="name">Erik</a>
+		</div>
+	</nav>
+</header>
+
+<style>
+	.page-header {
+		position: sticky;
+		top: 0;
+		z-index: 100;
+		background: var(--color-surface);
+		border: 1px solid var(--color-border);
+		border-top: none;
+		border-radius: 0 0 var(--radius) var(--radius);
+	}
+
+	.nav {
+		display: flex;
+		align-items: stretch;
+		justify-content: space-between;
+		min-height: 3.25rem;
+		padding: 0 1.5rem 0.5rem 0;
+	}
+
+	.right {
+		display: flex;
+		align-items: center;
+		gap: 2rem;
+	}
+
+	.name {
+		font-size: 1.15rem;
+		font-weight: 700;
+		color: var(--color-text);
+	}
+
+	ul {
+		display: flex;
+		gap: 1.25rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	a {
+		color: var(--color-text-muted);
+		text-decoration: none;
+	}
+
+	a:hover,
+	a[aria-current='page'] {
+		color: var(--color-text);
+	}
+
+	.nav-links {
+		gap: 0.2rem;
+	}
+
+	.nav-links li {
+		display: flex;
+	}
+
+	.nav-links a {
+		display: flex;
+		align-items: center;
+		padding: 0 1.1rem;
+		border-radius: 0 0 8px 8px;
+		transition: background-color 0.15s, color 0.15s;
+	}
+
+	.nav-links a:hover {
+		background: var(--color-nav-hover);
+		color: var(--color-nav-hover-text);
+	}
+
+	.nav-links li:first-child a {
+		border-bottom-left-radius: var(--radius);
+	}
+
+	.nav-links a[aria-current='page'] {
+		background: var(--color-nav-active);
+		box-shadow: 0 4px 12px color-mix(in srgb, var(--color-nav-active) 45%, transparent);
+		color: var(--color-nav-active-text);
+		font-weight: 600;
+	}
+
+	.socials a {
+		display: flex;
+	}
+
+	@media (max-width: 640px) {
+		.socials {
+			display: none;
+		}
+	}
+</style>

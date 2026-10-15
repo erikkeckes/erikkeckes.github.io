@@ -1,0 +1,56 @@
+---
+interface Props {
+	/** Image path, video file (.mp4/.webm) or YouTube URL */
+	src: string;
+	alt: string;
+	/** Still image shown before a video file starts playing */
+	poster?: string;
+}
+
+const { src, alt, poster } = Astro.props;
+
+const youtubeId = src.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]{11})/)?.[1];
+const isVideoFile = /\.(mp4|webm|ogg)$/i.test(src);
+---
+
+<div class="media">
+	{
+		youtubeId ? (
+			<iframe
+				src={`https://www.youtube-nocookie.com/embed/${youtubeId}`}
+				title={alt}
+				allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+				allowfullscreen
+				loading="lazy"
+			/>
+		) : isVideoFile ? (
+			<video src={src} poster={poster} controls preload="metadata" playsinline aria-label={alt} />
+		) : (
+			<img src={src} alt={alt} />
+		)
+	}
+</div>
+
+<style>
+	.media {
+		overflow: hidden;
+		aspect-ratio: 16 / 9;
+		background: var(--color-code-bg);
+		border-radius: var(--radius);
+		box-shadow: 0 12px 32px var(--color-shadow);
+	}
+
+	iframe,
+	video,
+	img {
+		display: block;
+		width: 100%;
+		height: 100%;
+		border: 0;
+		object-fit: cover;
+	}
+
+	video {
+		object-fit: contain;
+	}
+</style>

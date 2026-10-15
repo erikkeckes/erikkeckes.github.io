@@ -1,0 +1,52 @@
+---
+interface Props {
+	tags: string[];
+}
+
+const { tags } = Astro.props;
+
+// Must match the number of --tag-color-N variables in global.css
+const TAG_COLOR_COUNT = 12;
+
+// Same text always hashes (FNV-1a) to the same color, regardless of case or page
+const colorIndex = (tag: string) => {
+	let hash = 2166136261;
+	for (const char of tag.trim().toLowerCase()) {
+		hash ^= char.charCodeAt(0);
+		hash = Math.imul(hash, 16777619) >>> 0;
+	}
+	return hash % TAG_COLOR_COUNT;
+};
+---
+
+{
+	tags.length > 0 && (
+		<ul class="tags">
+			{tags.map((tag) => (
+				<li style={`--tag-bg: var(--tag-color-${colorIndex(tag)})`}>{tag}</li>
+			))}
+		</ul>
+	)
+}
+
+<style>
+	.tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	li {
+		padding: 0.15rem 0.65rem;
+		border-radius: 999px;
+		background: var(--tag-bg);
+		color: var(--tag-text);
+		font-size: 0.78rem;
+		font-weight: 600;
+		line-height: 1.5;
+		white-space: nowrap;
+	}
+</style>

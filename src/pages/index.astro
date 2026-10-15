@@ -1,0 +1,112 @@
+---
+import { getCollection } from 'astro:content';
+import HomeLayout from '../layouts/HomeLayout.astro';
+import Button from '../components/Button.astro';
+import Hero3D from '../components/home/Hero3D.astro';
+import Section from '../components/home/Section.astro';
+import Subsection from '../components/home/Subsection.astro';
+import Timeline from '../components/home/Timeline.astro';
+import About from '../components/home/About.astro';
+import TechStack from '../components/home/TechStack.astro';
+import SocialFooter from '../components/SocialFooter.astro';
+import { experience, education } from '../data/career';
+
+// Pick showcase entries by setting `featured: true` in their frontmatter
+const FEATURED_LIMIT = 3;
+
+const featuredProjects = (await getCollection('projects', ({ data }) => data.featured))
+	.sort((a, b) => a.data.importance - b.data.importance)
+	.slice(0, FEATURED_LIMIT);
+
+const featuredPosts = (await getCollection('blog', ({ data }) => data.featured))
+	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+	.slice(0, FEATURED_LIMIT);
+
+const formatDate = (date: Date) =>
+	date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+---
+
+<HomeLayout>
+	<Hero3D />
+
+	<Section id="projects" label="Featured projects">
+		<div class="subsections">
+			{
+				featuredProjects.map(({ id, data }, index) => (
+					<Subsection
+						index={index}
+						href={`/projects/${id}`}
+						title={data.title}
+						description={data.description}
+						image={data.image}
+						tags={data.tags}
+						cta="View project →"
+					/>
+				))
+			}
+		</div>
+		<Fragment slot="footer"><Button href="/projects">See all projects</Button></Fragment>
+	</Section>
+
+	<Section id="blog" label="From the blog">
+		<div class="subsections">
+			{
+				featuredPosts.map(({ id, data }, index) => (
+					<Subsection
+						index={index}
+						href={`/blog/${id}`}
+						title={data.title}
+						description={data.description}
+						image={data.image}
+						tags={data.tags}
+						meta={formatDate(data.date)}
+						cta="Read post →"
+					/>
+				))
+			}
+		</div>
+		<Fragment slot="footer"><Button href="/blog">See all posts</Button></Fragment>
+	</Section>
+
+	<Section id="career" label="Career">
+		<div class="career">
+			<Timeline title="Professional experience" entries={experience} align="end" />
+			<Timeline title="Education" entries={education} />
+		</div>
+	</Section>
+
+	<Section id="about" label="About me">
+		<About />
+		<TechStack />
+	</Section>
+
+	<SocialFooter />
+</HomeLayout>
+
+<style>
+	/* Full-bleed bands: cancel the section's side padding, leave room for the last wave */
+	.subsections {
+		margin: var(--wave-height) calc(var(--section-pad-x) * -1);
+		/* Keep the bands' z-index stacking local so they never cover the sticky navbar */
+		isolation: isolate;
+	}
+
+	/* Experience left, education right, joined by one centre line; stacked on mobile */
+	.career {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 2.5rem;
+	}
+
+	@media (min-width: 761px) {
+		.career {
+			grid-template-columns: 1fr 1fr;
+			gap: 0;
+			background: linear-gradient(var(--color-border), var(--color-border)) center / 2px 100% no-repeat;
+		}
+
+		.career :global(li) {
+			border-color: transparent;
+		}
+	}
+</style>

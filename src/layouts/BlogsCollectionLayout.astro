@@ -1,0 +1,26 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import CollectionLayout from './CollectionLayout.astro';
+import BlogCard from '../components/BlogCard.astro';
+
+interface Props {
+	posts: CollectionEntry<'blog'>[];
+}
+
+const { posts } = Astro.props;
+---
+
+<CollectionLayout title="Blog" columns={2} isEmpty={posts.length === 0}>
+	{
+		posts.map(({ id, data }) => (
+			<BlogCard
+				href={`/blog/${id}`}
+				title={data.title}
+				description={data.description}
+				date={data.date}
+				image={data.image}
+				tags={data.tags}
+			/>
+		))
+	}
+</CollectionLayout>

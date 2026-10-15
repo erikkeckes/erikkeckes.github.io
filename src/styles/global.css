@@ -1,0 +1,158 @@
+:root {
+	color-scheme: dark;
+
+	/* Backgrounds */
+	--color-bg: #080f14;
+	--color-surface: #121821;
+	--color-surface-elevated: #1a2634;
+	--color-code-bg: #02090d;
+	--color-border: #2a3b4f;
+
+	/* Brand */
+	--color-primary: #22d3a7;
+	--color-secondary: #3b82f6;
+	--color-accent: #7af3d0;
+	--color-tag-line: #03ffb8;
+
+	/* Text */
+	--color-text: #e2e8f0;
+	--color-text-muted: #94a3b8;
+	--color-text-on-primary: var(--color-bg);
+
+	--color-shadow: rgb(2 9 13 / 0.6);
+
+	--color-nav-active: var(--color-primary);
+	--color-nav-active-text: var(--color-text-on-primary);
+	--color-nav-hover: var(--color-surface-elevated);
+	--color-nav-hover-text: var(--color-accent);
+
+	--color-button: var(--color-primary);
+	--color-button-text: var(--color-text-on-primary);
+	--color-button-hover: var(--color-accent);
+
+	--color-subsection-a: var(--color-surface);
+	--color-subsection-b: var(--color-surface-elevated);
+	--wave-height: clamp(28px, 5vw, 64px);
+
+	--radius: 12px;
+
+	/* Tag palette (cool tones to match the scheme): every color keeps white text at WCAG AA contrast (>= 4.5:1) */
+	--tag-text: #ffffff;
+	--tag-color-0: #0f766e;
+	--tag-color-1: #047857;
+	--tag-color-2: #0e7490;
+	--tag-color-3: #0369a1;
+	--tag-color-4: #1d4ed8;
+	--tag-color-5: #4338ca;
+	--tag-color-6: #6d28d9;
+	--tag-color-7: #7e22ce;
+	--tag-color-8: #a21caf;
+	--tag-color-9: #be123c;
+	--tag-color-10: #b45309;
+	--tag-color-11: #475569;
+
+	--font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	background: var(--color-bg);
+	color: var(--color-text);
+	font-family: var(--font-sans);
+	line-height: 1.6;
+}
+
+a {
+	color: var(--color-primary);
+}
+
+a:hover {
+	color: var(--color-accent);
+}
+
+::selection {
+	background: color-mix(in srgb, var(--color-primary) 35%, transparent);
+	color: var(--color-text);
+}
+
+code,
+pre {
+	font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+	background: var(--color-code-bg);
+	border: 1px solid var(--color-border);
+	border-radius: 6px;
+}
+
+code {
+	padding: 0.1em 0.35em;
+	font-size: 0.9em;
+}
+
+pre {
+	padding: 1rem 1.25rem;
+	overflow-x: auto;
+}
+
+pre code {
+	padding: 0;
+	background: none;
+	border: none;
+}
+
+/* Markdown body: text, images and videos */
+.prose {
+	max-width: 75ch;
+	margin: 0 auto;
+}
+
+.prose h2 {
+	margin: 2.5rem 0 0.75rem;
+	font-size: 1.5rem;
+}
+
+.prose h3 {
+	margin: 2rem 0 0.5rem;
+	font-size: 1.2rem;
+}
+
+.prose p,
+.prose ul,
+.prose ol {
+	margin: 0 0 1.1rem;
+}
+
+.prose img,
+.prose video,
+.prose iframe {
+	display: block;
+	width: 100%;
+	height: auto;
+	margin: 1.75rem 0;
+	border: 0;
+	border-radius: var(--radius);
+	box-shadow: 0 8px 24px var(--color-shadow);
+}
+
+.prose iframe {
+	aspect-ratio: 16 / 9;
+}
+
+/* Side-by-side images: wrap them in <div class="gallery"> in the markdown */
+.prose .gallery {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+	gap: 1rem;
+	margin: 1.75rem 0;
+}
+
+.prose .gallery img {
+	margin: 0;
+	aspect-ratio: 16 / 9;
+	object-fit: cover;
+}

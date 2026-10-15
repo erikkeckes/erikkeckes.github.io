@@ -1,0 +1,33 @@
+---
+interface Props {
+	id: string;
+	/** Accessible name for the section; it has no visible heading */
+	label: string;
+}
+
+const { id, label } = Astro.props;
+---
+
+<section class="section" id={id} aria-label={label}>
+	<slot />
+	{
+		Astro.slots.has('footer') && (
+			<div class="footer">
+				<slot name="footer" />
+			</div>
+		)
+	}
+</section>
+
+<style>
+	.section {
+		--section-pad-x: clamp(1rem, 3vw, 1.5rem);
+		padding: clamp(2.5rem, 6vw, 4.5rem) var(--section-pad-x);
+	}
+
+	.footer {
+		display: flex;
+		justify-content: center;
+		margin-top: clamp(1.5rem, 4vw, 2.5rem);
+	}
+</style>
