@@ -1,5 +1,6 @@
 /// <reference types="@webgpu/types" />
 import shaderSource from './hero.wgsl?raw';
+import glslSource from './hero.frag.glsl?raw';
 
 export interface HeroRenderer {
 	destroy: () => void;
@@ -39,19 +40,25 @@ const readColor = (name: string): [number, number, number, number] => {
 	return [parseInt(match[1], 16) / 255, parseInt(match[2], 16) / 255, parseInt(match[3], 16) / 255, 1];
 };
 
-/**
- * Starts the WebGPU hero scene on `canvas`.
- * Resolves to null when WebGPU is unavailable, so the caller can show a fallback.
- */
-export async function createHeroRenderer(canvas: HTMLCanvasElement): Promise<HeroRenderer | null> {
+/** Draws one frame of the scene from the shared uniform block */
+interface GpuBackend {
+	draw: (uniforms: Float32Array) => void;
+	destroy: () => void;
+}
+
+async function createWebGPUBackend(canvas: HTMLCanvasElement): Promise<GpuBackend | null> {
 	if (!navigator.gpu) return null;
 
 	const adapter = await navigator.gpu.requestAdapter({ powerPreference: 'low-power' });
 	if (!adapter) return null;
 
 	const device = await adapter.requestDevice();
+	// Only claim the canvas once we have a device, so a failed attempt leaves it free for WebGL
 	const context = canvas.getContext('webgpu');
-	if (!context) return null;
+	if (!context) {
+		device.destroy();
+		return null;
+	}
 
 	const format = navigator.gpu.getPreferredCanvasFormat();
 	context.configure({ device, format, alphaMode: 'opaque' });
@@ -64,9 +71,8 @@ export async function createHeroRenderer(canvas: HTMLCanvasElement): Promise<Her
 		primitive: { topology: 'triangle-list' },
 	});
 
-	const uniforms = new Float32Array(UNIFORM_FLOATS);
 	const uniformBuffer = device.createBuffer({
-		size: uniforms.byteLength,
+		size: UNIFORM_FLOATS * 4,
 		usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
 	});
 	const bindGroup = device.createBindGroup({
@@ -74,6 +80,141 @@ export async function createHeroRenderer(canvas: HTMLCanvasElement): Promise<Her
 		entries: [{ binding: 0, resource: { buffer: uniformBuffer } }],
 	});
 
+	device.lost.then((info) => {
+		if (info.reason !== 'destroyed') console.warn('WebGPU device lost:', info.message);
+	});
+
+	return {
+		draw: (uniforms) => {
+			device.queue.writeBuffer(uniformBuffer, 0, uniforms);
+
+			const encoder = device.createCommandEncoder();
+			const pass = encoder.beginRenderPass({
+				colorAttachments: [
+					{
+						view: context.getCurrentTexture().createView(),
+						loadOp: 'clear',
+						storeOp: 'store',
+						clearValue: { r: 0, g: 0, b: 0, a: 1 },
+					},
+				],
+			});
+			pass.setPipeline(pipeline);
+			pass.setBindGroup(0, bindGroup);
+			pass.draw(3);
+			pass.end();
+			device.queue.submit([encoder.finish()]);
+		},
+		destroy: () => {
+			uniformBuffer.destroy();
+			device.destroy();
+		},
+	};
+}
+
+// Same full-screen triangle and uv mapping as vs_main in hero.wgsl
+const GLSL_VERTEX = `#version 300 es
+out vec2 v_uv;
+void main() {
+	vec2 pos = vec2[3](vec2(-1.0, -3.0), vec2(-1.0, 1.0), vec2(3.0, 1.0))[gl_VertexID];
+	gl_Position = vec4(pos, 0.0, 1.0);
+	v_uv = pos * vec2(0.5, -0.5) + 0.5;
+}`;
+
+function createWebGL2Backend(canvas: HTMLCanvasElement): GpuBackend | null {
+	const gl = canvas.getContext('webgl2', {
+		alpha: false,
+		antialias: false,
+		depth: false,
+		stencil: false,
+		powerPreference: 'low-power',
+	});
+	if (!gl) return null;
+
+	const compile = (type: number, source: string) => {
+		const shader = gl.createShader(type)!;
+		gl.shaderSource(shader, source);
+		gl.compileShader(shader);
+		return shader;
+	};
+
+	// Built lazily so a lost context can be rebuilt once it is restored
+	let program: WebGLProgram | null = null;
+	let dataLocation: WebGLUniformLocation | null = null;
+	let vao: WebGLVertexArrayObject | null = null;
+
+	const build = () => {
+		const vertex = compile(gl.VERTEX_SHADER, GLSL_VERTEX);
+		const fragment = compile(gl.FRAGMENT_SHADER, glslSource);
+		const linked = gl.createProgram()!;
+		gl.attachShader(linked, vertex);
+		gl.attachShader(linked, fragment);
+		gl.linkProgram(linked);
+		gl.deleteShader(vertex);
+		gl.deleteShader(fragment);
+
+		if (!gl.getProgramParameter(linked, gl.LINK_STATUS)) {
+			const log = gl.getProgramInfoLog(linked) || 'unknown error';
+			gl.deleteProgram(linked);
+			if (gl.isContextLost()) return false;
+			throw new Error(`Hero shader failed to link: ${log}`);
+		}
+		program = linked;
+		dataLocation = gl.getUniformLocation(linked, 'u_data');
+		// WebGL 2 needs a bound VAO to draw, even without vertex attributes
+		vao = gl.createVertexArray();
+		return true;
+	};
+
+	if (!build()) return null;
+
+	const onContextLost = (event: Event) => {
+		event.preventDefault();
+		program = null;
+	};
+	const onContextRestored = () => build();
+	canvas.addEventListener('webglcontextlost', onContextLost);
+	canvas.addEventListener('webglcontextrestored', onContextRestored);
+
+	return {
+		draw: (uniforms) => {
+			if (!program) return;
+			gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+			gl.useProgram(program);
+			gl.uniform4fv(dataLocation, uniforms);
+			gl.bindVertexArray(vao);
+			gl.drawArrays(gl.TRIANGLES, 0, 3);
+		},
+		destroy: () => {
+			canvas.removeEventListener('webglcontextlost', onContextLost);
+			canvas.removeEventListener('webglcontextrestored', onContextRestored);
+			if (program) gl.deleteProgram(program);
+			if (vao) gl.deleteVertexArray(vao);
+			gl.getExtension('WEBGL_lose_context')?.loseContext();
+		},
+	};
+}
+
+/** Prefers WebGPU, falling back to WebGL 2 when WebGPU is missing or fails to start */
+async function createBackend(canvas: HTMLCanvasElement): Promise<GpuBackend | null> {
+	try {
+		const backend = await createWebGPUBackend(canvas);
+		if (backend) return backend;
+	} catch (error) {
+		console.info('WebGPU failed to start, trying WebGL 2:', error);
+	}
+	return createWebGL2Backend(canvas);
+}
+
+/**
+ * Starts the hero scene on `canvas`, using WebGPU or else WebGL 2.
+ * Resolves to null when neither is available, so the caller can show a fallback.
+ */
+export async function createHeroRenderer(canvas: HTMLCanvasElement): Promise<HeroRenderer | null> {
+	const backend = await createBackend(canvas);
+	if (!backend) return null;
+
+	const uniforms = new Float32Array(UNIFORM_FLOATS);
 	uniforms.set(readColor('--color-bg'), 8);
 	uniforms.set(readColor('--color-primary'), 12);
 	uniforms.set(readColor('--color-secondary'), 16);
@@ -181,24 +322,7 @@ export async function createHeroRenderer(canvas: HTMLCanvasElement): Promise<Her
 		uniforms[2] = timeMs / 1000;
 		uniforms[4] = camera.azimuth;
 		uniforms[5] = camera.inclination;
-		device.queue.writeBuffer(uniformBuffer, 0, uniforms);
-
-		const encoder = device.createCommandEncoder();
-		const pass = encoder.beginRenderPass({
-			colorAttachments: [
-				{
-					view: context.getCurrentTexture().createView(),
-					loadOp: 'clear',
-					storeOp: 'store',
-					clearValue: { r: 0, g: 0, b: 0, a: 1 },
-				},
-			],
-		});
-		pass.setPipeline(pipeline);
-		pass.setBindGroup(0, bindGroup);
-		pass.draw(3);
-		pass.end();
-		device.queue.submit([encoder.finish()]);
+		backend.draw(uniforms);
 	};
 
 	// Animate only while visible. Reduced-motion users get still frames that only update
@@ -242,10 +366,6 @@ export async function createHeroRenderer(canvas: HTMLCanvasElement): Promise<Her
 
 	requestFrame();
 
-	device.lost.then((info) => {
-		if (info.reason !== 'destroyed') console.warn('WebGPU device lost:', info.message);
-	});
-
 	return {
 		destroy: () => {
 			cancelAnimationFrame(frameId);
@@ -255,8 +375,7 @@ export async function createHeroRenderer(canvas: HTMLCanvasElement): Promise<Her
 			canvas.removeEventListener('pointercancel', onPointerUp);
 			resizeObserver.disconnect();
 			visibilityObserver.disconnect();
-			uniformBuffer.destroy();
-			device.destroy();
+			backend.destroy();
 		},
 	};
 }

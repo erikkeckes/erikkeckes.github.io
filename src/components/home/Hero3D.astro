@@ -1,5 +1,5 @@
 ---
-// WebGPU-rendered hero scene. Rendering lives in src/scripts/webgpu/
+// GPU-rendered hero scene (WebGPU, falling back to WebGL 2). Rendering lives in src/scripts/webgpu/
 interface Props {
 	name?: string;
 	tagline?: string;
@@ -15,7 +15,7 @@ const { name = 'Erik Kečkéš', tagline = 'Graphics & Engine programmer' } = As
 		<h1 class="name">{name}</h1>
 		<p class="tagline">{tagline}</p>
 	</div>
-	<p class="fallback" hidden>Your browser doesn't support WebGPU, so the 3D scene can't be shown.</p>
+	<p class="fallback" hidden>Your browser doesn't support WebGPU or WebGL 2, so the 3D scene can't be shown.</p>
 </section>
 
 <script>
@@ -28,7 +28,7 @@ const { name = 'Erik Kečkéš', tagline = 'Graphics & Engine programmer' } = As
 	if (canvas) {
 		createHeroRenderer(canvas)
 			.then((renderer) => {
-				if (!renderer) throw new Error('WebGPU unavailable');
+				if (!renderer) throw new Error('WebGPU and WebGL 2 unavailable');
 				scene?.classList.add('is-ready');
 			})
 			.catch((error) => {
