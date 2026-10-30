@@ -140,10 +140,11 @@ Hooks::ActivateHooks();
 ```
 
 <h2>Limitations</h2>
-- The trampoline copies exactly 5 bytes. This only works if those bytes end on an instruction boundary and contain no RIP-relative instructions. A more robust version would use a length disassembler to copy whole instructions and fix up relative offsets.
-- Hooks are installed while other threads may be running. Suspending threads during patching would make it safer.
-- Deactivating hooks (restoring the original bytes) is not implemented yet.
-- Hooks cannot be added dynamically; all hooks must be registered before they are activated.
+
+* The trampoline copies exactly 5 bytes. This only works if those bytes end on an instruction boundary and contain no RIP-relative instructions. A more robust version would use a length disassembler to copy whole instructions and fix up relative offsets.
+* Hooks are installed while other threads may be running. Suspending threads during patching would make it safer.
+* Deactivating hooks (restoring the original bytes) is not implemented yet.
+* Hooks cannot be added dynamically; all hooks must be registered before they are activated.
 
 <h2>Conclusion</h2>
 This relatively small hooking system can handle simple cases of Windows DLL function indirection. Building it helped me explore how Windows handles shared libraries and how to work with memory at a lower level.
