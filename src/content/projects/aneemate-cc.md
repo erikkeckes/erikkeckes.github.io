@@ -1,15 +1,16 @@
 ---
-title: AneeMate & Citizen Conflict
-description: High-octane parkour speedrunning game set in Hell, inspired by Ghostrunner and Neon White.
+title: AneeMate & Citizen Conflict | System Programmer and Optimizations
+description: Competetive multiplayer game development(PvP shooter, Battle royalle, Extraction shotter)
+contribution : Ability system, Character controller, Network optimizations
 image: /assets/img/qorpo.jpg
 video: /assets/img/qorpo.jpg
 featured: false
-tags: [Professional, Game, Unreal Engine]
-importance: 3
+tags: [Professional, Team, Game, Unreal Engine, Multiplayer, C++, Blueprints, Optimization]
+importance: 6
 type: Professional
 team: Team
 role: System & Network programmer
-technologies: [Unreal Engine, Blueprints, C++, Networking, Optimization]
+technologies: [Unreal Engine, Blueprints, C++, Networking]
 ---
 
 <h3>Game Mechanics</h3>
@@ -48,7 +49,7 @@ The Classic Arena Mode features a variety of intense game types, including 5v5, 
 </div>
 <div class="row">
     <div class="col-sm mt-3 mt-md-0">
-        <img src="/assets/img/CC/CC2.jpg" alt="Inferno level" loading="lazy" />
+        <img src="/assets/img/CC/CC2.png" alt="Inferno level" loading="lazy" />
     </div>
     <div class="col-sm mt-3 mt-md-0">
         <img src="/assets/img/CC/CC3.jpg" alt="Inferno level" loading="lazy" />

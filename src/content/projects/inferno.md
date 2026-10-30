@@ -1,11 +1,12 @@
 ---
-title: Inferno
+title: Inferno | Gameplay Programmer
 description: High-octane parkour speedrunning game set in Hell, inspired by Ghostrunner and Neon White.
+contribution : Character controller, Camera controls and gameplay systems
 image: /assets/img/Inferno/player1.png
 video: /assets/video/Inferno/trailer.mp4
 featured: false
-tags: [School, Gamem, Unreal Engine]
-importance: 3
+tags: [School, Team, Game, Unreal Engine, Blueprints]
+importance: 5
 type: School
 team: Team
 role: Character controller programmer

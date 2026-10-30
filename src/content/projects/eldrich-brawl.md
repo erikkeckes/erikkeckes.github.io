@@ -1,15 +1,16 @@
 ---
-title: Eldricth Brawl
-description: High-octane parkour speedrunning game set in Hell, inspired by Ghostrunner and Neon White.
+title: Eldricth Brawl | Gameplay Programmer
+description: Local multiplayer brawl party 2D game. Knock your enemies and sacrifice them to win Chutulus blesing.
+contribution : Character controller, Combat System, Score System, Animations programming
 image: /assets/img/EB/main_screen.png
-video: /assets/video/ohmeowgod/game.App.mp4
+video: /assets/video/game.mp4
 featured: false
-tags: [Personal, Game, Unity Engine, C#]
-importance: 3
+tags: [Personal, Team, Game, Unity Engine, C#]
+importance: 7
 type: Personal
 team: Team
 role: Gameplay programmer
-technologies: [Unity Engine, C#]
+technologies: [Unity Engine, C#, Local Multiplayer]
 ---
 
 Eldritch Brawl is a local co-op party game inspired by Gang Beasts and TowerFall, designed for 2 to 4 players. Each match begins with players spawning at random locations within a chaotic, fast-paced arena. To gain the upper hand, players must pick up various items. All items can be thrwed, hitting opponent temporarily stun them.

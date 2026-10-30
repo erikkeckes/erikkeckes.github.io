@@ -1,16 +1,16 @@
 ---
 title: Wind Tree Animations | Optimizations
-description: Optimizing the bending algorithm to render larger numbers of animated trees.
+description: Optimizing bending pose calculations utilizing compute on GPU.
 date: 2025-02-22
 image: /assets/img/treeOpt/prof_capture.png
 featured: true
-tags: [DirectX 12, GPU programming, Animation]
+tags: [DirectX 12, GPU programming, Animation, HLSL, Optimization]
 technologies: [C++, DirectX 12, HLSL]
 ---
 
 
 <h1>
-Scaling provedural wind tree animations for larger amounts
+Scaling provedural wind tree animations for larger numbers of trees
 </h1>
 In the previous post, I explained how wind effects on trees can be simulated using bending and stretching techniques. In this post, I’ll focus on the bending algorithm and how it can be scaled to handle a larger number of trees efficiently. Open-world games often display more than just a few trees at once, and we still need to leave enough GPU time for rendering everything else not just the trees.<br>
 

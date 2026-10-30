@@ -8,13 +8,14 @@ interface Props {
 	href: string;
 	title: string;
 	description: string;
+	contribution? : string;
 	image?: string;
 	tags?: string[];
 	meta?: string;
 	cta?: string;
 }
 
-const { index, href, title, description, image, tags = [], meta, cta = 'Learn more →' } =
+const { index, href, title, description, contribution, image, tags = [], meta, cta = 'Learn more →' } =
 	Astro.props;
 
 // Transitions are drawn in a 1440x80 box: flat along the top, shaped along the bottom
@@ -77,6 +78,7 @@ const tone = index % 2 === 0 ? 'tone-a' : 'tone-b';
 			<TagList tags={tags} />
 			{meta && <span class="meta">{meta}</span>}
 			<p>{description}</p>
+			{contribution && (<h4>Contribution</h4><p>{contribution}</p>)}
 			<div class="footer">
 				<Button href={href}>{cta}</Button>
 			</div>
@@ -148,6 +150,10 @@ const tone = index % 2 === 0 ? 'tone-a' : 'tone-b';
 		margin: 0;
 		font-size: clamp(1.2rem, 2.5vw, 1.6rem);
 		line-height: 1.2;
+	}
+
+	h4 {
+		margin : 0;
 	}
 
 	p {

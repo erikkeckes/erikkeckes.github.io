@@ -7,6 +7,7 @@ const projects = defineCollection({
 	schema: z.object({
 		title: z.string(),
 		description: z.string(),
+		contribution : z.string().optional(),
 		image: z.string().optional(),
 		/** Hero media on the project page: an mp4/webm path or a YouTube URL. Falls back to `image` */
 		video: z.string().optional(),

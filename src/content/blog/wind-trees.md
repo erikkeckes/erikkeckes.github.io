@@ -1,10 +1,10 @@
 ---
 title: Wind Tree Animations | Calculating pose
-description: GPU procedural wind animation inspired by Ghost of Tsushima and God of War.
+description: Calculation and creation of pose of tree on GPU. Asset preparation, parsing and constrains.
 date: 2025-01-22
 image: /assets/img/WindAnim/Levels.png
 featured: true
-tags: [DirectX 12, GPU programming, Animation, C++]
+tags: [DirectX 12, GPU programming, Animation, C++, HLSL]
 technologies: [C++, DirectX 12, HLSL]
 ---
 
